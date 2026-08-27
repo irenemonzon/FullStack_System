@@ -117,7 +117,7 @@ This is the load-bearing security sprint — do not proceed until RLS is manuall
 
 **Backend**
 - `packages/shared/src/schemas/guest.ts` — Zod `createGuestSchema` (display_name + gender required; birth_date/postcode/phone/preferred_language/dietary/notes optional) and `guestSearchQuerySchema` (firstName/birthDate/postcode/**phone**)
-- `apps/api/src/routes/guests.ts` — `GET /api/guests` (match search — ranks/matches on **name + birth date + phone**, phone being the strongest signal when provided), `POST /api/guests`, `GET /api/guests/:id`, `PATCH /api/guests/:id`, `GET /api/guests/:id/visits`
+- `apps/api/src/routes/guests.ts` — `GET /api/guests` (match search — ranks/matches on **name + birth date + phone**, phone being the strongest signal when provided; **with no filters at all, returns the 50 most recently registered guests instead** — a plain list, not part of the original scope's volunteer flow, added for visibility into what's been registered), `POST /api/guests`, `GET /api/guests/:id`, `PATCH /api/guests/:id`, `GET /api/guests/:id/visits`
 - Register all five guest routes in `apps/api/src/lib/openapi.ts`, reusing `createGuestSchema`/`guestSearchQuerySchema` from `packages/shared` so the docs match the actual validation
 
 **Frontend**
@@ -125,7 +125,8 @@ This is the load-bearing security sprint — do not proceed until RLS is manuall
 - `apps/web/src/screens/CheckIn.tsx` (Screen 1 — New guest / Returning guest entry, header shows the signed-in volunteer's name + sign-out; only reachable once logged in via `Login.tsx` from Sprint 2)
 - `apps/web/src/screens/FindGuest.tsx` (Screen 2 — search by first name/birth date/postcode/**phone**, ranked matches with "last visit X ago", "none of these — start new guest" fallback)
 - `apps/web/src/screens/RegisterGuest.tsx` (Screen 3 — name/alias + gender required; birth_date/postcode/**phone**/language/dietary/notes optional via expandable "add more"; phone called out in the UI copy as helping avoid duplicate records)
-- React Router routes wired in `apps/web/src/App.tsx` for the three screens above
+- `apps/web/src/screens/GuestList.tsx` (not a Figma screen — a small dev/admin "View all guests" list, reachable via a link on `CheckIn.tsx`, reusing the same search endpoint with no filters)
+- React Router routes wired in `apps/web/src/App.tsx` for the four screens above
 
 **Testing steps**
 1. Backend: with a valid volunteer JWT, call `POST /api/guests` with only display_name + gender — confirm 201 and the row in Supabase has birth_date/postcode/phone as null.

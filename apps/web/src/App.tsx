@@ -5,6 +5,7 @@ import ResetPassword from "./screens/ResetPassword";
 import CheckIn from "./screens/CheckIn";
 import FindGuest from "./screens/FindGuest";
 import RegisterGuest from "./screens/RegisterGuest";
+import GuestList from "./screens/GuestList";
 import RequireAuth from "./components/RequireAuth";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,14 @@ function App() {
             element={
               <RequireAuth>
                 <RegisterGuest />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/guests"
+            element={
+              <RequireAuth>
+                <GuestList />
               </RequireAuth>
             }
           />

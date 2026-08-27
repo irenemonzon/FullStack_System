@@ -64,7 +64,13 @@ export default function CheckIn() {
               </button>
             </div>
 
-      
+            <button
+              type="button"
+              onClick={() => navigate("/guests")}
+              className="mt-6 text-sm text-purple-700 hover:underline"
+            >
+              View all guests →
+            </button>
           </>
         )}
       </div>

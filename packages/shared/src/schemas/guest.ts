@@ -17,16 +17,14 @@ export type CreateGuestInput = z.infer<typeof createGuestSchema>;
 export const updateGuestSchema = createGuestSchema.partial();
 export type UpdateGuestInput = z.infer<typeof updateGuestSchema>;
 
-export const guestSearchQuerySchema = z
-  .object({
-    firstName: z.string().min(1).optional(),
-    birthDate: z.string().date().optional(),
-    postcode: z.string().min(1).optional(),
-    phone: z.string().min(1).optional(),
-  })
-  .refine((v) => v.firstName || v.birthDate || v.postcode || v.phone, {
-    message: "At least one search field is required",
-  });
+// All fields optional: a ranked search when any are given, or the most
+// recently registered guests (a plain list) when none are.
+export const guestSearchQuerySchema = z.object({
+  firstName: z.string().min(1).optional(),
+  birthDate: z.string().date().optional(),
+  postcode: z.string().min(1).optional(),
+  phone: z.string().min(1).optional(),
+});
 export type GuestSearchQuery = z.infer<typeof guestSearchQuerySchema>;
 
 export const guestSchema = createGuestSchema.extend({

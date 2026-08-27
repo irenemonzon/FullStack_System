@@ -12,10 +12,11 @@ const router = Router();
 registry.registerPath({
   method: "get",
   path: "/guests",
-  description: "Ranked returning-guest match search — any one field is enough",
+  description:
+    "Ranked returning-guest match search when any filter is given; the most recently registered guests (plain list) when none are",
   security: [{ bearerAuth: [] }],
   request: { query: guestSearchQuerySchema },
-  responses: { 200: { description: "Ranked matches", content: { "application/json": { schema: z.array(guestSchema) } } } },
+  responses: { 200: { description: "Matches or recent guests", content: { "application/json": { schema: z.array(guestSchema) } } } },
 });
 
 router.get("/", async (req, res) => {
@@ -46,11 +47,11 @@ router.get("/", async (req, res) => {
     matchConditions.push(sql`${guests.displayName} ilike ${pattern}`);
   }
 
-  const scoreExpr = sql.join(scoreTerms, sql` + `);
-  const whereExpr = sql.join(matchConditions, sql` or `);
+  const hasFilters = matchConditions.length > 0;
+  const scoreExpr = hasFilters ? sql.join(scoreTerms, sql` + `) : sql`0`;
 
-  const rows = await withAuth(req.auth!, (tx) =>
-    tx
+  const baseQuery = withAuth(req.auth!, (tx) => {
+    const query = tx
       .select({
         id: guests.id,
         displayName: guests.displayName,
@@ -67,12 +68,18 @@ router.get("/", async (req, res) => {
         score: scoreExpr.as("score"),
       })
       .from(guests)
-      .where(whereExpr)
-      .orderBy(desc(sql`score`))
-      .limit(10),
-  );
+      .$dynamic();
 
-  res.json(rows);
+    if (hasFilters) {
+      return query
+        .where(sql.join(matchConditions, sql` or `))
+        .orderBy(desc(sql`score`))
+        .limit(10);
+    }
+    return query.orderBy(desc(guests.createdAt)).limit(50);
+  });
+
+  res.json(await baseQuery);
 });
 
 registry.registerPath({
