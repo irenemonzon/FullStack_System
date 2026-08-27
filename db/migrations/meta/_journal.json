@@ -8,6 +8,20 @@
       "when": 1787793550063,
       "tag": "0000_greedy_queen_noir",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1787800828125,
+      "tag": "0001_rls_policies",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787800829833,
+      "tag": "0002_audit_trigger",
+      "breakpoints": true
     }
   ]
 }
