@@ -15,6 +15,7 @@ This plan turns that scope document into an actionable, sprint-based build order
 - **Insufficient stock is blocked**: if a volunteer tries to log more of a kitchen/material-aid item than `quantity_on_hand` has left, the action is rejected outright (no partial/negative stock) and the UI shows a clear message — it does not silently clamp or allow negative stock.
 - **`per_guest_limit` not enforced in Stage 1**: the scope's `inventory_items.per_guest_limit` column exists in the schema but volunteers are not limited in how much of an item they log per visit for now; enforcing it is deferred (see Post-Stage-1 Follow-ups).
 - **Auth changed from magic-link to email + password** (overrides the scope doc's "magic link" note): volunteers log in directly on the device (iPad/phone/desktop) with email + password — no redirect out to an email client. Accounts are **provisioned by an admin** (email + role set up ahead of time, manually via the Supabase dashboard for Stage 1 — no in-app account-creation UI yet), and users can self-serve a **password reset** via a "Forgot password" email link. Still backed by Supabase Auth (email/password provider instead of OTP); JWT verification, role lookup, and RLS all work exactly the same regardless of how the session was created.
+- **API documentation via Swagger/OpenAPI** (new — not in the original scope doc): the API is documented with a generated OpenAPI spec, browsable at `GET /api/docs` (Swagger UI) and `GET /api/openapi.json` (raw spec), both unauthenticated like `/api/health`. Generated from the **same Zod schemas** in `packages/shared` (via `@asteasolutions/zod-to-openapi`) rather than hand-written separately, so the docs can't drift from the validation rules the API actually enforces. Each sprint that adds routes also registers them in `apps/api/src/lib/openapi.ts`.
 
 The goal of this plan is a working Stage 1 app — check-in → register/find guest → log kitchen/material-aid/information services (with live mock stock) → visit summary → reach reporting — fully built and verified against local dev servers.
 
@@ -70,6 +71,15 @@ Get an empty monorepo skeleton installing cleanly before any infra or schema wor
 2. Run `pnpm --filter web dev` — open `http://localhost:5173` and confirm the Vite shell renders with no console errors.
 3. From the browser console on the web app, confirm a fetch to the API health endpoint succeeds with no CORS error.
 
+**1d. API documentation (Swagger/OpenAPI)** *(added after Sprint 1/2 were already built — retrofitted, not part of the original Sprint 1 pass)*
+- `apps/api/src/lib/openapi.ts` — a `@asteasolutions/zod-to-openapi` registry; each route file registers its path + the shared Zod schema it validates against
+- Mount `swagger-ui-express` at `GET /api/docs`, and the raw generated document at `GET /api/openapi.json` — both unauthenticated, mounted before the global `verifyJwt` middleware (same as `/api/health`)
+- Register `/api/health` as the first entry, so the pattern exists before Sprint 3 adds real routes
+
+**Testing steps**
+1. Run `pnpm --filter api dev`, open `http://localhost:3000/api/docs` — confirm Swagger UI loads and shows `/api/health`.
+2. Request `http://localhost:3000/api/openapi.json` — confirm it returns a valid OpenAPI JSON document.
+
 ## Sprint 2 — Auth, RLS, Audit Trigger (must pass before Sprint 3)
 
 This is the load-bearing security sprint — do not proceed until RLS is manually verified.
@@ -107,6 +117,7 @@ This is the load-bearing security sprint — do not proceed until RLS is manuall
 **Backend**
 - `packages/shared/src/schemas/guest.ts` — Zod `createGuestSchema` (display_name + gender required; birth_date/postcode/phone/preferred_language/dietary/notes optional) and `guestSearchQuerySchema` (firstName/birthDate/postcode/**phone**)
 - `apps/api/src/routes/guests.ts` — `GET /api/guests` (match search — ranks/matches on **name + birth date + phone**, phone being the strongest signal when provided), `POST /api/guests`, `GET /api/guests/:id`, `PATCH /api/guests/:id`, `GET /api/guests/:id/visits`
+- Register all five guest routes in `apps/api/src/lib/openapi.ts`, reusing `createGuestSchema`/`guestSearchQuerySchema` from `packages/shared` so the docs match the actual validation
 
 **Frontend**
 - `apps/web/src/lib/supabaseClient.ts`, `apps/web/src/lib/apiClient.ts` (typed fetch, attaches JWT), `apps/web/src/lib/queries/guests.ts` (TanStack Query hooks: `useGuestSearch`, `useCreateGuest`, `useGuest`, `useGuestVisits`)
@@ -121,6 +132,7 @@ This is the load-bearing security sprint — do not proceed until RLS is manuall
 3. Frontend: from `CheckIn.tsx`, choose "New guest" → fill only name + gender on `RegisterGuest.tsx` → save — confirm no validation error and the guest lands in Supabase.
 4. Frontend: from `CheckIn.tsx`, choose "Returning guest" → search on `FindGuest.tsx` by partial first name and postcode — confirm the guest appears under "Possible matches" and can be selected, and that "none of these — start new guest" reaches `RegisterGuest.tsx`.
 5. Register two guests with the same first name but different phone numbers/birth dates — confirm searching by phone correctly distinguishes them instead of returning both as equally ranked matches.
+6. Open `http://localhost:3000/api/docs` — confirm all five guest routes appear with the correct request/response shapes.
 
 ## Sprint 4 — Visits + Services Logging (incl. Mock Stock Decrement)
 
@@ -136,6 +148,7 @@ The most logic-heavy sprint — the transactional core of the app. Backend-only;
 - Seed data (`db/seed.ts`): `categories` (kitchen: hot meals/pantry; material_aid: clothing/toiletries/blankets), the 8 `support_categories` (Housing, Health, Mental health, Legal, Financial, Family violence, Drug & alcohol, Language services), and sample `inventory_items` **with seeded `quantity_on_hand`/`low_stock_threshold`** so stock UI is real from day one
 - Critical automated tests cover: service logging decrementing stock atomically; the insufficient-stock rejection path; delete/undo restoring it; guest/visit/service Zod validation rejecting bad payloads
 - **Explicit boundary:** mock stock only — no `stock_movements` ledger, no donations/donors, no restock endpoint; `per_guest_limit` not enforced
+- Register the inventory/categories/support-categories/visits/services routes in `apps/api/src/lib/openapi.ts`
 
 **Testing steps**
 1. Run `pnpm test` in `apps/api` — confirm the service-logging/stock, insufficient-stock, and validation tests pass.
@@ -144,6 +157,7 @@ The most logic-heavy sprint — the transactional core of the app. Backend-only;
 4. `POST /api/visits/:id/services` again requesting more of that item than remains in `quantity_on_hand` — confirm the request is rejected with a clear error, no `services` row is created, and `quantity_on_hand` is unchanged.
 5. Call `DELETE /api/services/:id` on the successful service from step 3 — confirm the row is removed and `quantity_on_hand` is restored (+2).
 6. Repeat for an information-station service — confirm `service_supports` rows are created and no inventory row is touched.
+7. Open `http://localhost:3000/api/docs` — confirm the inventory/categories/support-categories/visits/services routes all appear.
 
 ## Sprint 5 — Volunteer Screens 4–7 (Record Services → Visit Summary)
 
@@ -171,11 +185,13 @@ Frontend-only; wires the UI to the Sprint 4 backend endpoints.
 **Backend**
 - `apps/api/src/routes/reports.ts` — `GET /api/reports/reach?from=&to=` (unique guests, visits, new vs returning, items, supports signposted), `GET /api/reports/weekly`, `GET /api/reports/monthly`; restricted to `admin`/`lead`
 - No dedicated reports screen is in the section-7 volunteer flow — treat as API-only for Stage 1 unless the coordinator specifically asks for an in-app view
+- Register the three reports routes in `apps/api/src/lib/openapi.ts` — the last routes Stage 1 adds, so `/api/docs` is complete at this point
 
 **Testing steps**
 1. Using seeded/test visit data from Sprints 3–5, call `GET /api/reports/reach?from=&to=` — confirm unique guest count, visit count, new-vs-returning split, item totals, and supports-signposted count all match what was manually logged.
 2. Call `GET /api/reports/weekly` and `GET /api/reports/monthly` — confirm they return sensible subsets of the same data.
 3. Call the reports endpoints with a volunteer JWT — confirm access is denied (admin/lead only).
+4. Open `http://localhost:3000/api/docs` — confirm every Stage 1 route across all sprints is present and accurately documented.
 
 **Final Stage 1 verification (local, done-criteria)** — walk the full flow on the local dev servers and confirm each step:
 1. Sign in with email + password directly on `Login.tsx` (no email redirect for a normal login).
@@ -214,6 +230,7 @@ Stage 1 is done when all 7 steps above pass.
 - `apps/web/src/screens/CheckIn.tsx`, `FindGuest.tsx`, `RegisterGuest.tsx`, `RecordServices.tsx`, `VisitSummary.tsx` — the full volunteer-facing screen flow (Screens 1–7)
 - `apps/web/src/components/AddItemModal.tsx`, `InformationModal.tsx` — where the mock stock model and signposting UI surface to volunteers
 - `apps/web/src/lib/apiClient.ts`, `supabaseClient.ts` — frontend's connection to the API and to Supabase Auth
+- `apps/api/src/lib/openapi.ts` — OpenAPI registry generated from the shared Zod schemas, served at `/api/docs`/`/api/openapi.json`
 
 ## Verification
 

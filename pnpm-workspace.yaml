@@ -3,4 +3,5 @@ packages:
   - "packages/*"
   - "db"
 allowBuilds:
+  '@scarf/scarf': false
   esbuild: true
