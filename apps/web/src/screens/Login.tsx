@@ -59,39 +59,64 @@ export default function Login() {
   }
 
   return (
-    <main>
-      <h1>300 Blankets · Support Hub</h1>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="username"
-          required
-        />
+    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <h1 className="text-xl font-semibold text-slate-900">300 Blankets · Support Hub</h1>
 
-        <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
-          required
-        />
+        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
+              required
+              className="mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+            />
+          </div>
 
-        {error && <p role="alert">{error}</p>}
-        {resetSent && <p>Check your email for a password reset link.</p>}
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+              className="mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+            />
+          </div>
 
-        <button type="submit" disabled={submitting}>
-          {submitting ? "Signing in…" : "Sign in"}
-        </button>
-        <button type="button" onClick={handleForgotPassword}>
-          Forgot password?
-        </button>
-      </form>
+          {error && (
+            <p role="alert" className="text-sm text-red-600">
+              {error}
+            </p>
+          )}
+          {resetSent && <p className="text-sm text-green-700">Check your email for a password reset link.</p>}
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full rounded-lg bg-purple-600 px-4 py-3 text-base font-medium text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {submitting ? "Signing in…" : "Sign in"}
+          </button>
+          <button
+            type="button"
+            onClick={handleForgotPassword}
+            className="text-sm text-purple-700 hover:underline"
+          >
+            Forgot password?
+          </button>
+        </form>
+      </div>
     </main>
   );
 }

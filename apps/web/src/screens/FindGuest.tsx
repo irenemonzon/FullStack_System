@@ -4,6 +4,10 @@ import type { GuestSearchQuery } from "@support-hub/shared";
 import { useGuestSearch } from "../lib/queries/guests";
 import { parseDDMMYYToISO, formatRelativeTime } from "../lib/date";
 
+const inputClass =
+  "mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200";
+const labelClass = "block text-sm font-medium text-slate-700";
+
 // Screen 2 — Find a returning guest. Any one field is enough; results
 // are ranked server-side (phone is the strongest signal when given).
 export default function FindGuest() {
@@ -41,62 +45,122 @@ export default function FindGuest() {
   }
 
   return (
-    <main>
-      <button type="button" onClick={() => navigate("/")}>
-        Back
-      </button>
-      <h1>Find a returning guest</h1>
-      <p>Search by anything the guest is happy to share. Any one field is enough.</p>
+    <main className="min-h-screen bg-slate-50 px-6 py-8">
+      <div className="mx-auto w-full max-w-2xl">
+        <button type="button" onClick={() => navigate("/")} className="text-sm text-purple-700 hover:underline">
+          ← Back
+        </button>
 
-      <form onSubmit={handleSearch}>
-        <label htmlFor="firstName">First name</label>
-        <input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="e.g. Maria" />
+        <h1 className="mt-4 text-2xl font-semibold text-slate-900">Find a returning guest</h1>
+        <p className="mt-1 text-slate-600">Search by anything the guest is happy to share. Any one field is enough.</p>
 
-        <label htmlFor="birthDate">Birth date</label>
-        <input
-          id="birthDate"
-          value={birthDateInput}
-          onChange={(e) => setBirthDateInput(e.target.value)}
-          placeholder="e.g. DD/MM/YY"
-        />
+        <form onSubmit={handleSearch} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label htmlFor="firstName" className={labelClass}>
+              First name
+            </label>
+            <input
+              id="firstName"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              placeholder="e.g. Maria"
+              className={inputClass}
+            />
+          </div>
 
-        <label htmlFor="postcode">Postcode</label>
-        <input id="postcode" value={postcode} onChange={(e) => setPostcode(e.target.value)} placeholder="e.g. 3021" />
+          <div>
+            <label htmlFor="birthDate" className={labelClass}>
+              Birth date
+            </label>
+            <input
+              id="birthDate"
+              value={birthDateInput}
+              onChange={(e) => setBirthDateInput(e.target.value)}
+              placeholder="e.g. DD/MM/YY"
+              className={inputClass}
+            />
+          </div>
 
-        <label htmlFor="phone">Phone</label>
-        <input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="optional" />
+          <div>
+            <label htmlFor="postcode" className={labelClass}>
+              Postcode
+            </label>
+            <input
+              id="postcode"
+              value={postcode}
+              onChange={(e) => setPostcode(e.target.value)}
+              placeholder="e.g. 3021"
+              className={inputClass}
+            />
+          </div>
 
-        {error && <p role="alert">{error}</p>}
+          <div>
+            <label htmlFor="phone" className={labelClass}>
+              Phone
+            </label>
+            <input
+              id="phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="optional"
+              className={inputClass}
+            />
+          </div>
 
-        <button type="submit">Search</button>
-      </form>
+          {error && (
+            <p role="alert" className="text-sm text-red-600 sm:col-span-2">
+              {error}
+            </p>
+          )}
 
-      {query && (
-        <section>
-          <h2>Possible matches</h2>
-          {isFetching && <p>Searching…</p>}
-          {!isFetching && matches?.length === 0 && <p>No matches found.</p>}
-          <ul>
-            {matches?.map((guest) => (
-              <li key={guest.id}>
-                <span>{guest.displayName}</span>
-                <span>
-                  {[guest.birthDate, guest.postcode].filter(Boolean).join(" · ")}
-                  {" · "}
-                  {formatRelativeTime(guest.lastVisitAt)}
-                </span>
-                <button type="button" onClick={() => navigate("/", { state: { guest } })}>
-                  Select
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+          <button
+            type="submit"
+            className="rounded-lg bg-purple-600 px-4 py-3 text-base font-medium text-white transition hover:bg-purple-700 sm:col-span-2"
+          >
+            Search
+          </button>
+        </form>
 
-      <button type="button" onClick={() => navigate("/guests/new")}>
-        None of these — start a new guest
-      </button>
+        {query && (
+          <section className="mt-8">
+            <h2 className="text-lg font-semibold text-slate-900">Possible matches</h2>
+            {isFetching && <p className="mt-2 text-slate-600">Searching…</p>}
+            {!isFetching && matches?.length === 0 && <p className="mt-2 text-slate-600">No matches found.</p>}
+            <ul className="mt-3 flex flex-col gap-3">
+              {matches?.map((guest) => (
+                <li
+                  key={guest.id}
+                  className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4"
+                >
+                  <div>
+                    <p className="font-medium text-slate-900">{guest.displayName}</p>
+                    <p className="text-sm text-slate-500">
+                      {[guest.birthDate, guest.postcode].filter(Boolean).join(" · ")}
+                      {" · "}
+                      {formatRelativeTime(guest.lastVisitAt)}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/", { state: { guest } })}
+                    className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                  >
+                    Select
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <button
+          type="button"
+          onClick={() => navigate("/guests/new")}
+          className="mt-8 w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-base font-medium text-slate-700 hover:bg-slate-50"
+        >
+          None of these — start a new guest
+        </button>
+      </div>
     </main>
   );
 }

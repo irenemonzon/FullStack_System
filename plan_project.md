@@ -16,6 +16,7 @@ This plan turns that scope document into an actionable, sprint-based build order
 - **`per_guest_limit` not enforced in Stage 1**: the scope's `inventory_items.per_guest_limit` column exists in the schema but volunteers are not limited in how much of an item they log per visit for now; enforcing it is deferred (see Post-Stage-1 Follow-ups).
 - **Auth changed from magic-link to email + password** (overrides the scope doc's "magic link" note): volunteers log in directly on the device (iPad/phone/desktop) with email + password — no redirect out to an email client. Accounts are **provisioned by an admin** (email + role set up ahead of time, manually via the Supabase dashboard for Stage 1 — no in-app account-creation UI yet), and users can self-serve a **password reset** via a "Forgot password" email link. Still backed by Supabase Auth (email/password provider instead of OTP); JWT verification, role lookup, and RLS all work exactly the same regardless of how the session was created.
 - **API documentation via Swagger/OpenAPI** (new — not in the original scope doc): the API is documented with a generated OpenAPI spec, browsable at `GET /api/docs` (Swagger UI) and `GET /api/openapi.json` (raw spec), both unauthenticated like `/api/health`. Generated from the **same Zod schemas** in `packages/shared` (via `@asteasolutions/zod-to-openapi`) rather than hand-written separately, so the docs can't drift from the validation rules the API actually enforces. Each sprint that adds routes also registers them in `apps/api/src/lib/openapi.ts`.
+- **Styling (Tailwind) — a gap between scope and plan, now fixed**: the scope doc lists Tailwind in the tech stack, but this plan never scheduled installing/applying it, and Sprints 2–3 shipped every screen as plain unstyled HTML. Retrofitted as **Sprint 3b** below: Tailwind is installed once and every screen built so far is styled in that pass; every sprint from here on styles its own new screens as part of its Frontend section, rather than deferring styling to the end.
 
 The goal of this plan is a working Stage 1 app — check-in → register/find guest → log kitchen/material-aid/information services (with live mock stock) → visit summary → reach reporting — fully built and verified against local dev servers.
 
@@ -134,6 +135,21 @@ This is the load-bearing security sprint — do not proceed until RLS is manuall
 5. Register two guests with the same first name but different phone numbers/birth dates — confirm searching by phone correctly distinguishes them instead of returning both as equally ranked matches.
 6. Open `http://localhost:3000/api/docs` — confirm all five guest routes appear with the correct request/response shapes.
 
+## Sprint 3b — Styling (Tailwind CSS) *(retrofit — closes the scope/plan gap above)*
+
+Installs Tailwind once and styles every screen that exists so far. From this point on, styling a new screen is part of the sprint that builds it, not a separate pass.
+
+**Frontend**
+- Install Tailwind v4 in `apps/web` via the `@tailwindcss/vite` plugin (no separate PostCSS/`tailwind.config.js` needed); add it to `vite.config.ts`
+- Replace the Vite-scaffold `apps/web/src/index.css` (leftover landing-page styles: fixed 1126px `#root` width, centered text, border-inline) with `@import "tailwindcss";` plus minimal base styles (font, background)
+- Remove the now-unused scaffold leftovers: `App.css`, `assets/hero.png`, `assets/react.svg`, `assets/vite.svg`
+- Style every screen built in Sprints 2–3 with Tailwind utility classes: `Login.tsx`, `ResetPassword.tsx`, `CheckIn.tsx`, `FindGuest.tsx`, `RegisterGuest.tsx`, `SignOutButton.tsx` — large touch-friendly buttons and inputs throughout (primary device is an iPad at the door), a consistent header bar pattern (title + signed-in volunteer + sign out) across the authenticated screens, and clear visual hierarchy between primary actions (Sign in, Save & start visit, Search) and secondary ones (Back, Forgot password?, None of these)
+
+**Testing steps**
+1. Run `pnpm --filter web build` — confirms Tailwind compiles with no errors.
+2. Visually check each of the five screens in the browser — confirm consistent spacing/typography, no leftover unstyled scaffold elements, and no console errors.
+3. On a touch-sized viewport (e.g. iPad dimensions in dev tools), confirm buttons/inputs are comfortably tappable.
+
 ## Sprint 4 — Visits + Services Logging (incl. Mock Stock Decrement)
 
 The most logic-heavy sprint — the transactional core of the app. Backend-only; the frontend that consumes these endpoints is built in Sprint 5.
@@ -171,6 +187,7 @@ Frontend-only; wires the UI to the Sprint 4 backend endpoints.
 - `apps/web/src/screens/VisitSummary.tsx` (Screen 7 — recap by station, totals, "Confirm & finish" → Home)
 - `apps/web/src/components/SignOutButton.tsx` (header button on `CheckIn.tsx`, calls `supabaseClient.auth.signOut`)
 - PWA manifest/installability only (`apps/web/public/manifest.json`, Vite PWA plugin) — no offline write queue
+- Style all four new screens/components with Tailwind as they're built (per Sprint 3b — no separate styling pass at the end)
 
 **Testing steps**
 1. Start a visit for a guest and open all three station cards on `RecordServices.tsx` — confirm quick-add and +/- steppers update the running-totals footer live.
@@ -231,6 +248,7 @@ Stage 1 is done when all 7 steps above pass.
 - `apps/web/src/components/AddItemModal.tsx`, `InformationModal.tsx` — where the mock stock model and signposting UI surface to volunteers
 - `apps/web/src/lib/apiClient.ts`, `supabaseClient.ts` — frontend's connection to the API and to Supabase Auth
 - `apps/api/src/lib/openapi.ts` — OpenAPI registry generated from the shared Zod schemas, served at `/api/docs`/`/api/openapi.json`
+- `apps/web/src/index.css`, `vite.config.ts` — Tailwind setup (Sprint 3b); every screen's styling lives inline as Tailwind utility classes, not in separate stylesheets
 
 ## Verification
 
