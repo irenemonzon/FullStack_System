@@ -14,4 +14,5 @@ function required(name: string): string {
 }
 
 export const SUPABASE_URL = required("SUPABASE_URL");
+export const SUPABASE_ANON_KEY = required("SUPABASE_ANON_KEY");
 export const DATABASE_URL = required("DATABASE_URL");

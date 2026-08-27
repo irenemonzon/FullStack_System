@@ -118,6 +118,7 @@ This is the load-bearing security sprint — do not proceed until RLS is manuall
 **Backend**
 - `packages/shared/src/schemas/guest.ts` — Zod `createGuestSchema` (display_name + gender required; birth_date/postcode/phone/preferred_language/dietary/notes optional) and `guestSearchQuerySchema` (firstName/birthDate/postcode/**phone**)
 - `apps/api/src/routes/guests.ts` — `GET /api/guests` (match search — ranks/matches on **name + birth date + phone**, phone being the strongest signal when provided; **with no filters at all, returns the 50 most recently registered guests instead** — a plain list, not part of the original scope's volunteer flow, added for visibility into what's been registered), `POST /api/guests`, `GET /api/guests/:id`, `PATCH /api/guests/:id`, `GET /api/guests/:id/visits`
+- `apps/api/src/routes/auth.ts` — `POST /api/auth/login` (dev/testing convenience only, unauthenticated like `/api/health`): exchanges email+password for a Supabase access token server-side, so tools like Postman can get a bearer token without needing the Supabase project URL/anon key directly. The real frontend never calls this — it still authenticates via `supabase.auth.signInWithPassword` in the browser.
 - Register all five guest routes in `apps/api/src/lib/openapi.ts`, reusing `createGuestSchema`/`guestSearchQuerySchema` from `packages/shared` so the docs match the actual validation
 
 **Frontend**
