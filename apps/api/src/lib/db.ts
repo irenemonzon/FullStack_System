@@ -7,7 +7,13 @@ import { DATABASE_URL } from "../env.js";
 // Connects as the `postgres` (owner) role. Only use `db` directly for
 // pre-auth/system operations — see withAuth below, which scopes each
 // transaction to the `authenticated` role so RLS is actually enforced.
-export const client = postgres(DATABASE_URL);
+//
+// `prepare: false` because DATABASE_URL points at Supabase's connection
+// pooler (port 6543, PgBouncer in transaction mode) — named prepared
+// statements don't survive being handed to a different physical
+// connection between queries under transaction pooling, which otherwise
+// surfaces as intermittent FK/RLS errors or hangs under concurrent load.
+export const client = postgres(DATABASE_URL, { prepare: false });
 export const db = drizzle(client, { schema });
 
 // `role` is carried here only so callers can pass req.auth straight
