@@ -64,7 +64,12 @@ router.get("/", async (req, res) => {
         notes: guests.notes,
         createdAt: guests.createdAt,
         updatedAt: guests.updatedAt,
-        lastVisitAt: sql<string | null>`(select max(${visits.visitedAt}) from ${visits} where ${visits.guestId} = ${guests.id})`,
+        // Drizzle strips the table qualifier from `${guests.id}` when it's part of a
+        // selected field's own SQL fragment (as opposed to a WHERE/ORDER BY clause),
+        // so the naive correlated form silently resolved to `visits.guest_id = visits.id`
+        // (both columns exist on `visits`) and always returned null. Aliasing the inner
+        // table and writing the outer reference as a literal `guests.id` avoids the collision.
+        lastVisitAt: sql<string | null>`(select max(v.visited_at) from ${visits} v where v.guest_id = guests.id)`,
         score: scoreExpr.as("score"),
       })
       .from(guests)
