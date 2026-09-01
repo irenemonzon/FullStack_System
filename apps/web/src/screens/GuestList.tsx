@@ -1,23 +1,30 @@
-import { useNavigate } from "react-router-dom";
 import { useGuestSearch } from "../lib/queries/guests";
 import { formatRelativeTime } from "../lib/date";
+import { useSession } from "../lib/useSession";
+import SignOutButton from "../components/SignOutButton";
+import NavTabs from "../components/NavTabs";
 
 // Not one of the Figma-defined volunteer screens — a small dev/admin
 // convenience to browse everything registered so far, since Stage 1's
 // UI otherwise only supports registering or searching for one guest at
 // a time. Reuses GET /api/guests with no filters (see guests.ts).
 export default function GuestList() {
-  const navigate = useNavigate();
+  const { session } = useSession();
   const { data: guests, isFetching } = useGuestSearch({}, true);
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-8">
-      <div className="mx-auto w-full max-w-2xl">
-        <button type="button" onClick={() => navigate("/")} className="text-sm text-blue-700 hover:underline">
-          ← Back
-        </button>
+    <main className="min-h-screen bg-slate-50">
+      <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-6 py-4">
+        <span className="font-semibold text-slate-900">300 Blankets · Support Hub</span>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-slate-600">{session?.user.email}</span>
+          <SignOutButton />
+        </div>
+      </header>
+      <NavTabs />
 
-        <h1 className="mt-4 text-2xl font-semibold text-slate-900">All guests</h1>
+      <div className="mx-auto w-full max-w-2xl px-6 py-8">
+        <h1 className="text-2xl font-semibold text-slate-900">All guests</h1>
         <p className="mt-1 text-slate-600">Most recently registered first, up to 50.</p>
 
         {isFetching && <p className="mt-6 text-slate-600">Loading…</p>}

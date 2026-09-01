@@ -2,8 +2,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import type { Guest } from "@support-hub/shared";
 import { useSession } from "../lib/useSession";
 import { useCreateVisit } from "../lib/queries/visits";
-import { useCurrentUser } from "../lib/queries/users";
 import SignOutButton from "../components/SignOutButton";
+import NavTabs from "../components/NavTabs";
 
 type LocationState = { guest?: Guest } | null;
 
@@ -17,7 +17,6 @@ export default function CheckIn() {
   const state = location.state as LocationState;
   const guest = state?.guest;
   const createVisit = useCreateVisit();
-  const { data: me } = useCurrentUser();
 
   async function handleStartVisit() {
     if (!guest) return;
@@ -34,6 +33,7 @@ export default function CheckIn() {
           <SignOutButton />
         </div>
       </header>
+      <NavTabs />
 
       <div className="mx-auto w-full max-w-2xl px-6 py-12">
         {guest ? (
@@ -81,17 +81,6 @@ export default function CheckIn() {
               >
                 Returning guest
               </button>
-            </div>
-
-            <div className="mt-6 flex items-center gap-4">
-              <button type="button" onClick={() => navigate("/guests")} className="text-sm text-blue-700 hover:underline">
-                View all guests →
-              </button>
-              {me?.role === "admin" && (
-                <button type="button" onClick={() => navigate("/admin/users")} className="text-sm text-blue-700 hover:underline">
-                  Admin →
-                </button>
-              )}
             </div>
           </>
         )}

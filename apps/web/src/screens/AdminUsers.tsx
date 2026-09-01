@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
 import { createUserSchema, type CreateUserInput, type User } from "@support-hub/shared";
 import { useCreateUser, useCurrentUser, useDeleteUser, useUpdateUser, useUsers } from "../lib/queries/users";
 import SignOutButton from "../components/SignOutButton";
+import NavTabs from "../components/NavTabs";
 
 const ROLES: Array<{ value: User["role"]; label: string }> = [
   { value: "volunteer", label: "Volunteer" },
@@ -19,7 +19,6 @@ const labelClass = "block text-sm font-medium text-slate-700";
 // requireRole("admin") on every /api/users write. Volunteers/leads never
 // see the "Admin" link that opens this.
 export default function AdminUsers() {
-  const navigate = useNavigate();
   const { data: me } = useCurrentUser();
   const { data: users, isFetching } = useUsers(true);
   const createUser = useCreateUser();
@@ -84,13 +83,10 @@ export default function AdminUsers() {
           <SignOutButton />
         </div>
       </header>
+      <NavTabs />
 
       <div className="mx-auto w-full max-w-2xl px-6 py-8">
-        <button type="button" onClick={() => navigate("/")} className="text-sm text-blue-700 hover:underline">
-          ← Back
-        </button>
-
-        <div className="mt-4 flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold text-slate-900">Users</h1>
           <button
             type="button"
