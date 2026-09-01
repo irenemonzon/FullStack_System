@@ -15,4 +15,7 @@ function required(name: string): string {
 
 export const SUPABASE_URL = required("SUPABASE_URL");
 export const SUPABASE_ANON_KEY = required("SUPABASE_ANON_KEY");
+// Only used by routes/users.ts to create/delete Supabase Auth logins via
+// the Admin API — never sent to the frontend. Keep it out of any response.
+export const SUPABASE_SERVICE_ROLE_KEY = required("SUPABASE_SERVICE_ROLE_KEY");
 export const DATABASE_URL = required("DATABASE_URL");

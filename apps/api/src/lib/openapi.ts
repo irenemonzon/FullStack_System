@@ -60,6 +60,10 @@ const tags = [
     name: "Reports",
     description: "Reach summaries (unique guests, visits, new vs returning, items given, supports signposted). Admin/lead only.",
   },
+  {
+    name: "Users",
+    description: "Volunteer/admin accounts. Provisioning, role changes, and deactivation are admin only; GET /users/me is open to any signed-in user.",
+  },
 ];
 
 export function generateOpenApiDocument() {

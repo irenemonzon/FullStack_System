@@ -8,7 +8,9 @@ import RegisterGuest from "./screens/RegisterGuest";
 import GuestList from "./screens/GuestList";
 import RecordServices from "./screens/RecordServices";
 import VisitSummary from "./screens/VisitSummary";
+import AdminUsers from "./screens/AdminUsers";
 import RequireAuth from "./components/RequireAuth";
+import RequireAdmin from "./components/RequireAdmin";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +66,16 @@ function App() {
             element={
               <RequireAuth>
                 <VisitSummary />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <RequireAuth>
+                <RequireAdmin>
+                  <AdminUsers />
+                </RequireAdmin>
               </RequireAuth>
             }
           />

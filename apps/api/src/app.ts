@@ -12,6 +12,7 @@ import supportCategoriesRouter from "./routes/supportCategories.js";
 import visitsRouter from "./routes/visits.js";
 import servicesRouter from "./routes/services.js";
 import reportsRouter from "./routes/reports.js";
+import usersRouter from "./routes/users.js";
 
 export function createApp() {
   const app = express();
@@ -45,6 +46,7 @@ export function createApp() {
   // defines both full paths itself, so it's mounted at the bare /api root).
   app.use("/api", servicesRouter);
   app.use("/api/reports", reportsRouter);
+  app.use("/api/users", usersRouter);
 
   return app;
 }

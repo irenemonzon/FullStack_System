@@ -4,3 +4,4 @@ export * from "./schemas/inventory.js";
 export * from "./schemas/visit.js";
 export * from "./schemas/service.js";
 export * from "./schemas/report.js";
+export * from "./schemas/user.js";
