@@ -6,6 +6,8 @@ import CheckIn from "./screens/CheckIn";
 import FindGuest from "./screens/FindGuest";
 import RegisterGuest from "./screens/RegisterGuest";
 import GuestList from "./screens/GuestList";
+import RecordServices from "./screens/RecordServices";
+import VisitSummary from "./screens/VisitSummary";
 import RequireAuth from "./components/RequireAuth";
 
 const queryClient = new QueryClient();
@@ -46,6 +48,22 @@ function App() {
             element={
               <RequireAuth>
                 <GuestList />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/visits/:visitId/services"
+            element={
+              <RequireAuth>
+                <RecordServices />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/visits/:visitId/summary"
+            element={
+              <RequireAuth>
+                <VisitSummary />
               </RequireAuth>
             }
           />

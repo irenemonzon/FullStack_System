@@ -34,5 +34,8 @@ export const serviceSchema = z.object({
   details: z.object({ notes: z.string() }).nullable(),
   createdAt: z.string(),
   createdBy: z.string().uuid().nullable(),
+  // Only populated by GET /api/visits/:id, which joins service_supports in
+  // for information rows — absent from the row returned by POST .../services.
+  supportCategoryIds: z.array(z.string().uuid()).optional(),
 });
 export type Service = z.infer<typeof serviceSchema>;

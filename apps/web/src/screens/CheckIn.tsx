@@ -1,20 +1,27 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import type { Guest } from "@support-hub/shared";
 import { useSession } from "../lib/useSession";
+import { useCreateVisit } from "../lib/queries/visits";
 import SignOutButton from "../components/SignOutButton";
 
 type LocationState = { guest?: Guest } | null;
 
-// Screen 1 — Check-in / Home. Records who's served start here (New guest
-// / Returning guest); Sprint 4/5 add the actual visit-logging screens
-// that follow, so a selected/registered guest just shows a confirmation
-// for now.
+// Screen 1 — Check-in / Home. New guest / Returning guest start here; once
+// a guest is selected/registered, "Start visit" opens one (POST /api/visits)
+// and moves straight into RecordServices.tsx (Screen 4).
 export default function CheckIn() {
   const { session } = useSession();
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState;
   const guest = state?.guest;
+  const createVisit = useCreateVisit();
+
+  async function handleStartVisit() {
+    if (!guest) return;
+    const visit = await createVisit.mutateAsync({ guestId: guest.id });
+    navigate(`/visits/${visit.id}/services`);
+  }
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -30,14 +37,24 @@ export default function CheckIn() {
         {guest ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
             <h1 className="text-2xl font-semibold text-slate-900">Guest selected</h1>
-            <p className="mt-2 text-slate-600">
-              {guest.displayName} is ready to start a visit. Recording services (Sprint 4/5) lands next in the
-              build.
-            </p>
+            <p className="mt-2 text-slate-600">{guest.displayName} is ready to start a visit.</p>
+            {createVisit.isError && (
+              <p role="alert" className="mt-3 text-sm text-red-600">
+                {(createVisit.error as Error).message}
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={handleStartVisit}
+              disabled={createVisit.isPending}
+              className="mt-6 w-full rounded-lg bg-blue-600 px-4 py-3 text-base font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {createVisit.isPending ? "Starting…" : "Start visit"}
+            </button>
             <button
               type="button"
               onClick={() => navigate("/", { replace: true })}
-              className="mt-6 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="mt-3 text-sm text-slate-600 hover:underline"
             >
               Back to check-in
             </button>

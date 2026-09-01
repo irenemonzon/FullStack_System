@@ -1,0 +1,10 @@
+{
+  "name": "Support Hub — 300 Blankets",
+  "short_name": "Support Hub",
+  "description": "Register guests and log meals, material aid, and information support at the 300 Blankets drop-in centre.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
