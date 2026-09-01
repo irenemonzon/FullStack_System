@@ -14,6 +14,7 @@ registry.registerPath({
   path: "/guests",
   description:
     "Ranked returning-guest match search when any filter is given; the most recently registered guests (plain list) when none are",
+  tags: ["Guests"],
   security: [{ bearerAuth: [] }],
   request: { query: guestSearchQuerySchema },
   responses: { 200: { description: "Matches or recent guests", content: { "application/json": { schema: z.array(guestSchema) } } } },
@@ -91,6 +92,7 @@ registry.registerPath({
   method: "post",
   path: "/guests",
   description: "Register a guest (gender required, nothing else is)",
+  tags: ["Guests"],
   security: [{ bearerAuth: [] }],
   request: { body: { content: { "application/json": { schema: createGuestSchema } } } },
   responses: { 201: { description: "Created", content: { "application/json": { schema: guestSchema } } } },
@@ -116,6 +118,7 @@ registry.registerPath({
   method: "get",
   path: "/guests/{id}",
   description: "Read a guest's profile",
+  tags: ["Guests"],
   security: [{ bearerAuth: [] }],
   request: { params: z.object({ id: z.string().uuid() }) },
   responses: {
@@ -137,6 +140,7 @@ registry.registerPath({
   method: "patch",
   path: "/guests/{id}",
   description: "Edit a guest's profile",
+  tags: ["Guests"],
   security: [{ bearerAuth: [] }],
   request: {
     params: z.object({ id: z.string().uuid() }),
@@ -172,7 +176,8 @@ router.patch("/:id", async (req, res) => {
 registry.registerPath({
   method: "get",
   path: "/guests/{id}/visits",
-  description: "A guest's visit history",
+  description: "A guest's visit history, most recent first",
+  tags: ["Guests", "Visits"],
   security: [{ bearerAuth: [] }],
   request: { params: z.object({ id: z.string().uuid() }) },
   responses: { 200: { description: "Visits" } },

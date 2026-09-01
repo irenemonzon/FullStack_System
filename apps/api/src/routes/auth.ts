@@ -16,6 +16,7 @@ registry.registerPath({
   path: "/auth/login",
   description:
     "Dev/testing convenience: exchange email+password for a Supabase access token. Not used by the real frontend, which calls Supabase directly.",
+  tags: ["Auth"],
   request: { body: { content: { "application/json": { schema: loginSchema } } } },
   responses: {
     200: {

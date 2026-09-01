@@ -12,6 +12,7 @@ registry.registerPath({
   method: "get",
   path: "/categories",
   description: "Item categories, optionally filtered by station",
+  tags: ["Categories"],
   security: [{ bearerAuth: [] }],
   request: { query: categoryQuerySchema },
   responses: {

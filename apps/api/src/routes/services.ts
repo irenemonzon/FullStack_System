@@ -24,6 +24,7 @@ registry.registerPath({
   path: "/visits/{id}/services",
   description:
     "Log one station action for a visit. Kitchen/material_aid decrement quantity_on_hand transactionally and are rejected with 409 if not enough stock remains; information logs supportCategoryIds + an optional note.",
+  tags: ["Services"],
   security: [{ bearerAuth: [] }],
   request: {
     params: z.object({ id: z.string().uuid() }),
@@ -113,6 +114,7 @@ registry.registerPath({
   method: "delete",
   path: "/services/{id}",
   description: "Undo a mis-logged service; restores quantity_on_hand if it was a kitchen/material_aid entry",
+  tags: ["Services"],
   security: [{ bearerAuth: [] }],
   request: { params: z.object({ id: z.string().uuid() }) },
   responses: { 204: { description: "Deleted" }, 404: { description: "Not found" } },

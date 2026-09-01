@@ -104,6 +104,7 @@ registry.registerPath({
   method: "get",
   path: "/reports/reach",
   description: "Reach summary for a date range: unique guests, visits, new vs returning, items given, supports signposted (admin/lead only)",
+  tags: ["Reports"],
   security: [{ bearerAuth: [] }],
   request: { query: reportQuerySchema },
   responses: {
@@ -131,6 +132,7 @@ registry.registerPath({
   method: "get",
   path: "/reports/weekly",
   description: "Reach summary for the trailing 7 days (admin/lead only)",
+  tags: ["Reports"],
   security: [{ bearerAuth: [] }],
   responses: {
     200: { description: "Reach report", content: { "application/json": { schema: reachReportSchema } } },
@@ -151,6 +153,7 @@ registry.registerPath({
   method: "get",
   path: "/reports/monthly",
   description: "Reach summary for the trailing 30 days (admin/lead only)",
+  tags: ["Reports"],
   security: [{ bearerAuth: [] }],
   responses: {
     200: { description: "Reach report", content: { "application/json": { schema: reachReportSchema } } },

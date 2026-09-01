@@ -10,7 +10,8 @@ const router = Router();
 registry.registerPath({
   method: "get",
   path: "/support-categories",
-  description: "Signposting categories",
+  description: "The fixed list of support categories guests can be signposted to at the information station",
+  tags: ["Support Categories"],
   security: [{ bearerAuth: [] }],
   responses: {
     200: {

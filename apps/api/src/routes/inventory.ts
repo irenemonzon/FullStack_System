@@ -18,6 +18,7 @@ registry.registerPath({
   method: "get",
   path: "/inventory",
   description: "Item catalogue for the picklist, including mock stock counts (quantity_on_hand/low_stock_threshold)",
+  tags: ["Inventory"],
   security: [{ bearerAuth: [] }],
   request: { query: inventoryQuerySchema },
   responses: {
@@ -63,6 +64,7 @@ registry.registerPath({
   method: "post",
   path: "/inventory",
   description: "Create a catalogue item (admin/lead only)",
+  tags: ["Inventory"],
   security: [{ bearerAuth: [] }],
   request: { body: { content: { "application/json": { schema: createInventoryItemSchema } } } },
   responses: { 201: { description: "Created", content: { "application/json": { schema: inventoryItemSchema } } } },
@@ -83,6 +85,7 @@ registry.registerPath({
   method: "patch",
   path: "/inventory/{id}",
   description: "Update a catalogue item (admin/lead only)",
+  tags: ["Inventory"],
   security: [{ bearerAuth: [] }],
   request: {
     params: z.object({ id: z.string().uuid() }),
