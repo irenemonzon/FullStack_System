@@ -14,7 +14,7 @@ This plan turns that scope document into an actionable, sprint-based build order
 - **Guest deduplication**: to help volunteers avoid creating duplicate guest records with no ID required, guests capture an optional **phone number**, and returning-guest matching/ranking uses **name + birth date + phone number** together (phone as the strongest disambiguator when present).
 - **Insufficient stock is blocked**: if a volunteer tries to log more of a kitchen/material-aid item than `quantity_on_hand` has left, the action is rejected outright (no partial/negative stock) and the UI shows a clear message — it does not silently clamp or allow negative stock.
 - **`per_guest_limit` not enforced in Stage 1**: the scope's `inventory_items.per_guest_limit` column exists in the schema but volunteers are not limited in how much of an item they log per visit for now; enforcing it is deferred (see Post-Stage-1 Follow-ups).
-- **Auth changed from magic-link to email + password** (overrides the scope doc's "magic link" note): volunteers log in directly on the device (iPad/phone/desktop) with email + password — no redirect out to an email client. Accounts are **provisioned by an admin** (email + role set up ahead of time, manually via the Supabase dashboard for Stage 1 — no in-app account-creation UI yet), and users can self-serve a **password reset** via a "Forgot password" email link. Still backed by Supabase Auth (email/password provider instead of OTP); JWT verification, role lookup, and RLS all work exactly the same regardless of how the session was created.
+- **Auth changed from magic-link to email + password** (overrides the scope doc's "magic link" note): volunteers log in directly on the device (iPad/phone/desktop) with email + password — no redirect out to an email client. Accounts were originally meant to be **provisioned by an admin manually via the Supabase dashboard only, with no in-app account-creation UI** for Stage 1, and users can self-serve a **password reset** via a "Forgot password" email link. Still backed by Supabase Auth (email/password provider instead of OTP); JWT verification, role lookup, and RLS all work exactly the same regardless of how the session was created. **Superseded post-Stage-1** — see "Post-Stage-1 addition: in-app user management" below; the dashboard-only path is no longer the only way to provision an account.
 - **API documentation via Swagger/OpenAPI** (new — not in the original scope doc): the API is documented with a generated OpenAPI spec, browsable at `GET /api/docs` (Swagger UI) and `GET /api/openapi.json` (raw spec), both unauthenticated like `/api/health`. Generated from the **same Zod schemas** in `packages/shared` (via `@asteasolutions/zod-to-openapi`) rather than hand-written separately, so the docs can't drift from the validation rules the API actually enforces. Each sprint that adds routes also registers them in `apps/api/src/lib/openapi.ts`.
 - **Styling (Tailwind) — a gap between scope and plan, now fixed**: the scope doc lists Tailwind in the tech stack, but this plan never scheduled installing/applying it, and Sprints 2–3 shipped every screen as plain unstyled HTML. Retrofitted as **Sprint 3b** below: Tailwind is installed once and every screen built so far is styled in that pass; every sprint from here on styles its own new screens as part of its Frontend section, rather than deferring styling to the end.
 
@@ -86,7 +86,7 @@ Get an empty monorepo skeleton installing cleanly before any infra or schema wor
 This is the load-bearing security sprint — do not proceed until RLS is manually verified.
 
 **Account provisioning (how a volunteer gets an account)**
-- Admins create accounts manually via the Supabase dashboard: Authentication > Users > add a user with an email + temporary password, then insert a matching row in `public.users` with `full_name` + `role` (`volunteer`/`admin`/`lead`). No in-app "create user" screen in Stage 1 (per decision above) — this is a dashboard/manual step for now.
+- Admins create accounts manually via the Supabase dashboard: Authentication > Users > add a user with an email + temporary password, then insert a matching row in `public.users` with `full_name` + `role` (`volunteer`/`admin`/`lead`). No in-app "create user" screen in Stage 1 (per decision above) — this is a dashboard/manual step for now. **Note:** an in-app alternative was added post-Stage-1 — see "Post-Stage-1 addition: in-app user management" near the end of this doc. The dashboard/manual path documented here still works unchanged; it's no longer the only path.
 - Volunteers change that temporary password on first login via the same "Forgot password" flow described below.
 
 **Backend**
@@ -222,6 +222,18 @@ Frontend-only; wires the UI to the Sprint 4 backend endpoints.
 7. Call `DELETE` on one logged service — confirm `quantity_on_hand` is restored.
 
 Stage 1 is done when all 7 steps above pass.
+
+---
+
+## Post-Stage-1 addition: in-app user management
+
+Built after Stage 1 was already complete, at the user's explicit request — not part of this plan's original scope, and a direct deviation from the "Account provisioning" decision in Sprint 2 (dashboard-only, no in-app account-creation UI). Documented here for the same reason every other deviation in this doc is: so this plan stays the accurate record of what was actually built.
+
+- `/admin/users` (`apps/web/src/screens/AdminUsers.tsx`) — admin-only screen to create a user (email/password/name/role), reassign a user's role, and delete/deactivate one. Linked from `CheckIn.tsx` as "Admin →", shown only when `GET /api/users/me` reports `role === "admin"`.
+- Backend: `GET/POST /api/users`, `PATCH`/`DELETE /api/users/:id`, `GET /api/users/me` (`apps/api/src/routes/users.ts`), gated by `requireRole("admin")` — stricter than the admin/lead split used for inventory/reports, since account/role management is more sensitive. `apps/api/src/lib/supabaseAdmin.ts` wraps the Supabase Auth Admin REST API (create/delete logins) using `SUPABASE_SERVICE_ROLE_KEY`, now a required env var.
+- `db/migrations/0003_users_admin_write.sql` — `users` previously had only a `SELECT` grant for `authenticated` (writes were dashboard-only by design, see Sprint 2). This migration adds `INSERT`/`UPDATE`/`DELETE`, restricted to `role = 'admin'` via RLS policy — consistent with this project's rule that every table enforces its own writes at the DB layer, not just via `requireRole` in Express.
+- Delete semantics: revokes the Supabase Auth login immediately, then either hard-deletes the `public.users` row, or — if it's referenced by `guests`/`visits`/`services`/`audit_log` (FK violation, Postgres code `23503`) — deactivates it (`active = false`) instead. Those tables have no `ON DELETE CASCADE` to `users` on purpose (the audit trail must never lose its actor), so a volunteer with any history can't be hard-deleted; a fresh/unused account can.
+- The original Sprint 2 dashboard/manual provisioning path still works unchanged — this is an additional path, not a replacement.
 
 ---
 
