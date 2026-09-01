@@ -5,7 +5,7 @@ import { useGuestSearch } from "../lib/queries/guests";
 import { parseDDMMYYToISO, formatRelativeTime } from "../lib/date";
 
 const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200";
+  "mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200";
 const labelClass = "block text-sm font-medium text-slate-700";
 
 // Screen 2 — Find a returning guest. Any one field is enough; results
@@ -27,7 +27,7 @@ export default function FindGuest() {
 
     const birthDate = birthDateInput ? parseDDMMYYToISO(birthDateInput) : undefined;
     if (birthDateInput && !birthDate) {
-      setError("Birth date should be DD/MM/YY");
+      setError("Birth date should be DD/MM/YY or DD/MM/YYYY");
       return;
     }
 
@@ -47,7 +47,7 @@ export default function FindGuest() {
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-8">
       <div className="mx-auto w-full max-w-2xl">
-        <button type="button" onClick={() => navigate("/")} className="text-sm text-purple-700 hover:underline">
+        <button type="button" onClick={() => navigate("/")} className="text-sm text-blue-700 hover:underline">
           ← Back
         </button>
 
@@ -76,7 +76,7 @@ export default function FindGuest() {
               id="birthDate"
               value={birthDateInput}
               onChange={(e) => setBirthDateInput(e.target.value)}
-              placeholder="e.g. DD/MM/YY"
+              placeholder="e.g. DD/MM/YYYY"
               className={inputClass}
             />
           </div>
@@ -115,7 +115,7 @@ export default function FindGuest() {
 
           <button
             type="submit"
-            className="rounded-lg bg-purple-600 px-4 py-3 text-base font-medium text-white transition hover:bg-purple-700 sm:col-span-2"
+            className="rounded-lg bg-blue-600 px-4 py-3 text-base font-medium text-white transition hover:bg-blue-700 sm:col-span-2"
           >
             Search
           </button>

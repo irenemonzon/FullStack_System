@@ -51,14 +51,14 @@ export default function CheckIn() {
               <button
                 type="button"
                 onClick={() => navigate("/guests/new")}
-                className="rounded-xl border-2 border-slate-200 bg-white p-10 text-lg font-medium text-slate-900 transition hover:border-purple-400 hover:bg-purple-50"
+                className="rounded-xl border-2 border-slate-200 bg-white p-10 text-lg font-medium text-slate-900 transition hover:border-blue-400 hover:bg-blue-50"
               >
                 New guest
               </button>
               <button
                 type="button"
                 onClick={() => navigate("/guests/find")}
-                className="rounded-xl border-2 border-slate-200 bg-white p-10 text-lg font-medium text-slate-900 transition hover:border-purple-400 hover:bg-purple-50"
+                className="rounded-xl border-2 border-slate-200 bg-white p-10 text-lg font-medium text-slate-900 transition hover:border-blue-400 hover:bg-blue-50"
               >
                 Returning guest
               </button>
@@ -67,7 +67,7 @@ export default function CheckIn() {
             <button
               type="button"
               onClick={() => navigate("/guests")}
-              className="mt-6 text-sm text-purple-700 hover:underline"
+              className="mt-6 text-sm text-blue-700 hover:underline"
             >
               View all guests →
             </button>

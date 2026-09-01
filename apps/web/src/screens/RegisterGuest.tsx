@@ -12,11 +12,11 @@ const GENDERS: Array<{ value: CreateGuestInput["gender"]; label: string }> = [
 ];
 
 const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200";
+  "mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200";
 const labelClass = "block text-sm font-medium text-slate-700";
 
-// Screen 3 — Register a new guest. Only name + gender are required —
-// everything else lives behind "Add more" (see plan_project.md: the
+// Screen 3 — Register a new guest. Only name + gender are required;
+// the rest are shown as optional fields (see plan_project.md: the
 // Figma wireframe marks birth date/postcode as required, but the DB
 // schema/scope doc wins, so they stay optional here).
 export default function RegisterGuest() {
@@ -25,7 +25,6 @@ export default function RegisterGuest() {
 
   const [displayName, setDisplayName] = useState("");
   const [gender, setGender] = useState<CreateGuestInput["gender"] | null>(null);
-  const [showMore, setShowMore] = useState(false);
   const [birthDateInput, setBirthDateInput] = useState("");
   const [postcode, setPostcode] = useState("");
   const [phone, setPhone] = useState("");
@@ -45,7 +44,7 @@ export default function RegisterGuest() {
 
     const birthDate = birthDateInput ? parseDDMMYYToISO(birthDateInput) : undefined;
     if (birthDateInput && !birthDate) {
-      setError("Birth date should be DD/MM/YY");
+      setError("Birth date should be DD/MM/YY or DD/MM/YYYY");
       return;
     }
 
@@ -77,7 +76,7 @@ export default function RegisterGuest() {
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-8">
       <div className="mx-auto w-full max-w-2xl">
-        <button type="button" onClick={() => navigate("/")} className="text-sm text-purple-700 hover:underline">
+        <button type="button" onClick={() => navigate("/")} className="text-sm text-blue-700 hover:underline">
           ← Back
         </button>
 
@@ -111,7 +110,7 @@ export default function RegisterGuest() {
                     onChange={() => setGender(g.value)}
                     className="peer sr-only"
                   />
-                  <span className="block rounded-lg border border-slate-300 px-3 py-3 text-center text-sm font-medium text-slate-700 transition peer-checked:border-purple-500 peer-checked:bg-purple-50 peer-checked:text-purple-700 hover:bg-slate-50">
+                  <span className="block rounded-lg border border-slate-300 px-3 py-3 text-center text-sm font-medium text-slate-700 transition peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:bg-slate-50">
                     {g.label}
                   </span>
                 </label>
@@ -119,88 +118,79 @@ export default function RegisterGuest() {
             </div>
           </fieldset>
 
-          <button
-            type="button"
-            onClick={() => setShowMore((v) => !v)}
-            className="self-start text-sm text-purple-700 hover:underline"
-          >
-            {showMore ? "Hide extra details" : "Add more (tap to include)"}
-          </button>
-
-          {showMore && (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="birthDate" className={labelClass}>
-                  Birth date
-                </label>
-                <input
-                  id="birthDate"
-                  value={birthDateInput}
-                  onChange={(e) => setBirthDateInput(e.target.value)}
-                  placeholder="e.g. DD/MM/YY"
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="postcode" className={labelClass}>
-                  Postcode
-                </label>
-                <input
-                  id="postcode"
-                  value={postcode}
-                  onChange={(e) => setPostcode(e.target.value)}
-                  placeholder="e.g. 3021"
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="phone" className={labelClass}>
-                  Phone
-                </label>
-                <input
-                  id="phone"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="helps us avoid duplicate records"
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="preferredLanguage" className={labelClass}>
-                  Language
-                </label>
-                <input
-                  id="preferredLanguage"
-                  value={preferredLanguage}
-                  onChange={(e) => setPreferredLanguage(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="dietary" className={labelClass}>
-                  Dietary
-                </label>
-                <input id="dietary" value={dietary} onChange={(e) => setDietary(e.target.value)} className={inputClass} />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="notes" className={labelClass}>
-                  Notes
-                </label>
-                <textarea
-                  id="notes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  rows={3}
-                  className={inputClass}
-                />
-              </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="birthDate" className={labelClass}>
+                Birth date
+              </label>
+              <input
+                id="birthDate"
+                value={birthDateInput}
+                onChange={(e) => setBirthDateInput(e.target.value)}
+                placeholder="e.g. DD/MM/YYYY"
+                className={inputClass}
+              />
             </div>
-          )}
+
+            <div>
+              <label htmlFor="postcode" className={labelClass}>
+                Postcode
+              </label>
+              <input
+                id="postcode"
+                value={postcode}
+                onChange={(e) => setPostcode(e.target.value)}
+                placeholder="e.g. 3021"
+                className={inputClass}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="phone" className={labelClass}>
+                Phone
+              </label>
+              <input
+                id="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="e.g. 0412 345 678"
+                className={inputClass}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="preferredLanguage" className={labelClass}>
+                Language
+              </label>
+              <input
+                id="preferredLanguage"
+                value={preferredLanguage}
+                onChange={(e) => setPreferredLanguage(e.target.value)}
+                placeholder="e.g. English"
+                className={inputClass}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="dietary" className={labelClass}>
+                Dietary
+              </label>
+              <input id="dietary" value={dietary} onChange={(e) => setDietary(e.target.value)} className={inputClass} />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label htmlFor="notes" className={labelClass}>
+                Notes
+              </label>
+              <textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={3}
+                className={inputClass}
+              />
+            </div>
+          </div>
 
           {error && (
             <p role="alert" className="text-sm text-red-600">
@@ -211,7 +201,7 @@ export default function RegisterGuest() {
           <button
             type="submit"
             disabled={createGuest.isPending}
-            className="w-full rounded-lg bg-purple-600 px-4 py-3 text-base font-medium text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-lg bg-blue-600 px-4 py-3 text-base font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {createGuest.isPending ? "Saving…" : "Save & start visit"}
           </button>

@@ -13,7 +13,7 @@ export default function GuestList() {
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-8">
       <div className="mx-auto w-full max-w-2xl">
-        <button type="button" onClick={() => navigate("/")} className="text-sm text-purple-700 hover:underline">
+        <button type="button" onClick={() => navigate("/")} className="text-sm text-blue-700 hover:underline">
           ← Back
         </button>
 

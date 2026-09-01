@@ -1,12 +1,14 @@
-// Guests' birth dates are entered as DD/MM/YY (per the Figma wireframes)
-// but stored/sent as ISO (YYYY-MM-DD). Returns undefined if the input
-// doesn't look like a full DD/MM/YY value yet, so callers can just omit
-// the field rather than send a malformed date to the API.
+// Guests' birth dates are entered as DD/MM/YY (per the Figma wireframes),
+// but a 4-digit year (DD/MM/YYYY) is also accepted since most guests are
+// adults and a full birth year is less error-prone to type than 2 digits.
+// Stored/sent as ISO (YYYY-MM-DD). Returns undefined if the input doesn't
+// look like a full date yet, so callers can just omit the field rather
+// than send a malformed date to the API.
 export function parseDDMMYYToISO(input: string): string | undefined {
-  const match = /^(\d{2})\/(\d{2})\/(\d{2})$/.exec(input.trim());
+  const match = /^(\d{2})\/(\d{2})\/(\d{2}|\d{4})$/.exec(input.trim());
   if (!match) return undefined;
   const [, dd, mm, yy] = match;
-  const year = Number(yy) <= 30 ? `20${yy}` : `19${yy}`;
+  const year = yy.length === 4 ? yy : Number(yy) <= 30 ? `20${yy}` : `19${yy}`;
   return `${year}-${mm}-${dd}`;
 }
 
