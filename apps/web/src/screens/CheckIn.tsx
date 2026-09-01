@@ -26,14 +26,16 @@ export default function CheckIn() {
 
   return (
     <main className="min-h-screen bg-slate-50">
-      <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-6 py-4">
-        <span className="font-semibold text-slate-900">300 Blankets · Support Hub</span>
+      <header className="flex items-center justify-between gap-6 border-b border-slate-200 bg-white px-6 py-4">
+        <div className="flex items-center gap-6">
+          <span className="font-semibold text-slate-900">300 Blankets · Support Hub</span>
+          <NavTabs />
+        </div>
         <div className="flex items-center gap-4">
           <span className="text-sm text-slate-600">{session?.user.email}</span>
           <SignOutButton />
         </div>
       </header>
-      <NavTabs />
 
       <div className="mx-auto w-full max-w-2xl px-6 py-12">
         {guest ? (

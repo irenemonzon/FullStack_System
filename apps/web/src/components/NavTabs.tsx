@@ -2,20 +2,19 @@ import { NavLink } from "react-router-dom";
 import { useCurrentUser } from "../lib/queries/users";
 
 const tabClass = ({ isActive }: { isActive: boolean }) =>
-  `border-b-2 px-4 py-3 text-sm font-medium transition ${
-    isActive ? "border-blue-600 text-blue-700" : "border-transparent text-slate-600 hover:text-slate-900"
+  `rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+    isActive ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
   }`;
 
-// Shared tab bar for the three screens that live outside the single-guest
-// check-in flow (Check-in itself, plus the two admin/dev-convenience
-// screens it links out to) — CheckIn.tsx, GuestList.tsx, AdminUsers.tsx.
-// "Admin" only renders once GET /api/users/me confirms the role, same
-// gate RequireAdmin uses for the route itself.
+// Inline tab group, meant to sit next to the "300 Blankets" name inside the
+// shared header — CheckIn.tsx, GuestList.tsx, AdminUsers.tsx all render it
+// there. "Admin" only renders once GET /api/users/me confirms the role,
+// same gate RequireAdmin uses for the route itself.
 export default function NavTabs() {
   const { data: me } = useCurrentUser();
 
   return (
-    <nav className="flex gap-1 border-b border-slate-200 bg-white px-6">
+    <nav className="flex items-center gap-1">
       <NavLink to="/" end className={tabClass}>
         Check-in
       </NavLink>
