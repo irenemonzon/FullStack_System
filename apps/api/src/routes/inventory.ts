@@ -67,7 +67,10 @@ registry.registerPath({
   tags: ["Inventory"],
   security: [{ bearerAuth: [] }],
   request: { body: { content: { "application/json": { schema: createInventoryItemSchema } } } },
-  responses: { 201: { description: "Created", content: { "application/json": { schema: inventoryItemSchema } } } },
+  responses: {
+    201: { description: "Created", content: { "application/json": { schema: inventoryItemSchema } } },
+    403: { description: "Forbidden — admin/lead only" },
+  },
 });
 
 router.post("/", requireRole("admin", "lead"), async (req, res) => {
@@ -93,6 +96,7 @@ registry.registerPath({
   },
   responses: {
     200: { description: "Updated", content: { "application/json": { schema: inventoryItemSchema } } },
+    403: { description: "Forbidden — admin/lead only" },
     404: { description: "Not found" },
   },
 });
