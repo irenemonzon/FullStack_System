@@ -11,6 +11,7 @@ import categoriesRouter from "./routes/categories.js";
 import supportCategoriesRouter from "./routes/supportCategories.js";
 import visitsRouter from "./routes/visits.js";
 import servicesRouter from "./routes/services.js";
+import reportsRouter from "./routes/reports.js";
 
 export function createApp() {
   const app = express();
@@ -43,6 +44,7 @@ export function createApp() {
   // POST /api/visits/:id/services + DELETE /api/services/:id (services.ts
   // defines both full paths itself, so it's mounted at the bare /api root).
   app.use("/api", servicesRouter);
+  app.use("/api/reports", reportsRouter);
 
   return app;
 }
