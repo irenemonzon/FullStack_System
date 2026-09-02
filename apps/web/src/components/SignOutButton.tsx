@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { btn, size } from "../lib/ui";
 
 export default function SignOutButton() {
   const navigate = useNavigate();
@@ -10,11 +11,7 @@ export default function SignOutButton() {
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleSignOut}
-      className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-    >
+    <button type="button" onClick={handleSignOut} className={`${btn.secondary} ${size.sm}`}>
       Sign out
     </button>
   );

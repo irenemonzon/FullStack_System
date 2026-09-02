@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { loginSchema, resetPasswordSchema } from "@support-hub/shared";
 import { supabase } from "../lib/supabaseClient";
 import { useSession } from "../lib/useSession";
+import { btn, input, label, size } from "../lib/ui";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -59,13 +60,19 @@ export default function Login() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <h1 className="text-xl font-semibold text-slate-900">300 Blankets · Support Hub</h1>
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 via-slate-50 to-white px-4">
+      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-lg shadow-slate-200/50">
+        <div className="flex flex-col items-center text-center">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-lg font-bold text-white">
+            3B
+          </span>
+          <h1 className="mt-4 text-xl font-semibold text-slate-900">300 Blankets</h1>
+          <p className="text-sm text-slate-500">Support Hub</p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+            <label htmlFor="email" className={label}>
               Email
             </label>
             <input
@@ -75,12 +82,12 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="username"
               required
-              className="mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              className={input}
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+            <label htmlFor="password" className={label}>
               Password
             </label>
             <input
@@ -90,7 +97,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
               required
-              className="mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              className={input}
             />
           </div>
 
@@ -101,18 +108,10 @@ export default function Login() {
           )}
           {resetSent && <p className="text-sm text-green-700">Check your email for a password reset link.</p>}
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full rounded-lg bg-blue-600 px-4 py-3 text-base font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          <button type="submit" disabled={submitting} className={`${btn.primary} ${size.lg} w-full`}>
             {submitting ? "Signing in…" : "Sign in"}
           </button>
-          <button
-            type="button"
-            onClick={handleForgotPassword}
-            className="text-sm text-blue-700 hover:underline"
-          >
+          <button type="button" onClick={handleForgotPassword} className={`self-center text-sm ${btn.ghost}`}>
             Forgot password?
           </button>
         </form>

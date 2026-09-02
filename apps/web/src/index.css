@@ -3,3 +3,7 @@
 body {
   @apply bg-slate-50 text-slate-900 antialiased;
 }
+
+::selection {
+  @apply bg-indigo-100 text-indigo-900;
+}

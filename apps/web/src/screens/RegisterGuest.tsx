@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { createGuestSchema, type CreateGuestInput } from "@support-hub/shared";
 import { useCreateGuest } from "../lib/queries/guests";
 import { parseDDMMYYToISO } from "../lib/date";
+import { ArrowLeftIcon } from "../components/icons";
+import { btn, input, label, size } from "../lib/ui";
 
 const GENDERS: Array<{ value: CreateGuestInput["gender"]; label: string }> = [
   { value: "woman", label: "Woman" },
@@ -10,10 +12,6 @@ const GENDERS: Array<{ value: CreateGuestInput["gender"]; label: string }> = [
   { value: "non_binary", label: "Non-binary" },
   { value: "prefer_not_to_say", label: "Prefer not to say" },
 ];
-
-const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200";
-const labelClass = "block text-sm font-medium text-slate-700";
 
 export default function RegisterGuest() {
   const navigate = useNavigate();
@@ -72,15 +70,19 @@ export default function RegisterGuest() {
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-8">
       <div className="mx-auto w-full max-w-2xl">
-        <button type="button" onClick={() => navigate("/")} className="text-sm text-blue-700 hover:underline">
-          ← Back
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className={`inline-flex items-center gap-1.5 text-sm ${btn.ghost}`}
+        >
+          <ArrowLeftIcon /> Back
         </button>
 
         <h1 className="mt-4 text-2xl font-semibold text-slate-900">Register guest</h1>
 
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-6">
           <div>
-            <label htmlFor="displayName" className={labelClass}>
+            <label htmlFor="displayName" className={label}>
               Name
             </label>
             <input
@@ -89,12 +91,12 @@ export default function RegisterGuest() {
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="What should we call them?"
               required
-              className={inputClass}
+              className={input}
             />
           </div>
 
           <fieldset>
-            <legend className={labelClass}>Gender (required)</legend>
+            <legend className={label}>Gender (required)</legend>
             <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {GENDERS.map((g) => (
                 <label key={g.value} className="cursor-pointer">
@@ -106,7 +108,7 @@ export default function RegisterGuest() {
                     onChange={() => setGender(g.value)}
                     className="peer sr-only"
                   />
-                  <span className="block rounded-lg border border-slate-300 px-3 py-3 text-center text-sm font-medium text-slate-700 transition peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:bg-slate-50">
+                  <span className="block rounded-xl border-2 border-slate-200 px-3 py-3 text-center text-sm font-medium text-slate-700 transition peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 hover:border-slate-300">
                     {g.label}
                   </span>
                 </label>
@@ -116,7 +118,7 @@ export default function RegisterGuest() {
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="birthDate" className={labelClass}>
+              <label htmlFor="birthDate" className={label}>
                 Birth date
               </label>
               <input
@@ -124,12 +126,12 @@ export default function RegisterGuest() {
                 value={birthDateInput}
                 onChange={(e) => setBirthDateInput(e.target.value)}
                 placeholder="e.g. DD/MM/YYYY"
-                className={inputClass}
+                className={input}
               />
             </div>
 
             <div>
-              <label htmlFor="postcode" className={labelClass}>
+              <label htmlFor="postcode" className={label}>
                 Postcode
               </label>
               <input
@@ -137,12 +139,12 @@ export default function RegisterGuest() {
                 value={postcode}
                 onChange={(e) => setPostcode(e.target.value)}
                 placeholder="e.g. 3021"
-                className={inputClass}
+                className={input}
               />
             </div>
 
             <div>
-              <label htmlFor="phone" className={labelClass}>
+              <label htmlFor="phone" className={label}>
                 Phone
               </label>
               <input
@@ -150,12 +152,12 @@ export default function RegisterGuest() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="e.g. 0412 345 678"
-                className={inputClass}
+                className={input}
               />
             </div>
 
             <div>
-              <label htmlFor="preferredLanguage" className={labelClass}>
+              <label htmlFor="preferredLanguage" className={label}>
                 Language
               </label>
               <input
@@ -163,28 +165,22 @@ export default function RegisterGuest() {
                 value={preferredLanguage}
                 onChange={(e) => setPreferredLanguage(e.target.value)}
                 placeholder="e.g. English"
-                className={inputClass}
+                className={input}
               />
             </div>
 
             <div>
-              <label htmlFor="dietary" className={labelClass}>
+              <label htmlFor="dietary" className={label}>
                 Dietary
               </label>
-              <input id="dietary" value={dietary} onChange={(e) => setDietary(e.target.value)} className={inputClass} />
+              <input id="dietary" value={dietary} onChange={(e) => setDietary(e.target.value)} className={input} />
             </div>
 
             <div className="sm:col-span-2">
-              <label htmlFor="notes" className={labelClass}>
+              <label htmlFor="notes" className={label}>
                 Notes
               </label>
-              <textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                rows={3}
-                className={inputClass}
-              />
+              <textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className={input} />
             </div>
           </div>
 
@@ -194,11 +190,7 @@ export default function RegisterGuest() {
             </p>
           )}
 
-          <button
-            type="submit"
-            disabled={createGuest.isPending}
-            className="w-full rounded-lg bg-blue-600 px-4 py-3 text-base font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          <button type="submit" disabled={createGuest.isPending} className={`${btn.primary} ${size.lg} w-full`}>
             {createGuest.isPending ? "Saving…" : "Save & start visit"}
           </button>
         </form>

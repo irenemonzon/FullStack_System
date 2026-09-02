@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { updatePasswordSchema } from "@support-hub/shared";
 import { supabase } from "../lib/supabaseClient";
+import { btn, input, label, size } from "../lib/ui";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -37,13 +38,13 @@ export default function ResetPassword() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 via-slate-50 to-white px-4">
+      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-lg shadow-slate-200/50">
         <h1 className="text-xl font-semibold text-slate-900">Set a new password</h1>
 
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+            <label htmlFor="password" className={label}>
               New password
             </label>
             <input
@@ -53,12 +54,12 @@ export default function ResetPassword() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
               required
-              className="mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              className={input}
             />
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700">
+            <label htmlFor="confirmPassword" className={label}>
               Confirm new password
             </label>
             <input
@@ -68,7 +69,7 @@ export default function ResetPassword() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
               required
-              className="mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              className={input}
             />
           </div>
 
@@ -78,11 +79,7 @@ export default function ResetPassword() {
             </p>
           )}
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full rounded-lg bg-blue-600 px-4 py-3 text-base font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          <button type="submit" disabled={submitting} className={`${btn.primary} ${size.lg} w-full`}>
             {submitting ? "Saving…" : "Save new password"}
           </button>
         </form>

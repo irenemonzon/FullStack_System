@@ -1,14 +1,13 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import type { Guest } from "@support-hub/shared";
-import { useSession } from "../lib/useSession";
 import { useCreateVisit } from "../lib/queries/visits";
-import SignOutButton from "../components/SignOutButton";
-import NavTabs from "../components/NavTabs";
+import AppHeader from "../components/AppHeader";
+import { UserPlusIcon, UsersIcon } from "../components/icons";
+import { btn, card, size } from "../lib/ui";
 
 type LocationState = { guest?: Guest } | null;
 
 export default function CheckIn() {
-  const { session } = useSession();
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState;
@@ -23,20 +22,11 @@ export default function CheckIn() {
 
   return (
     <main className="min-h-screen bg-slate-50">
-      <header className="flex items-center justify-between gap-6 border-b border-slate-200 bg-white px-6 py-4">
-        <div className="flex items-center gap-6">
-          <span className="font-semibold text-slate-900">300 Blankets · Support Hub</span>
-          <NavTabs />
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-slate-600">{session?.user.email}</span>
-          <SignOutButton />
-        </div>
-      </header>
+      <AppHeader showNav />
 
       <div className="mx-auto w-full max-w-2xl px-6 py-12">
         {guest ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <div className={`${card} p-8 text-center`}>
             <h1 className="text-2xl font-semibold text-slate-900">Guest selected</h1>
             <p className="mt-2 text-slate-600">{guest.displayName} is ready to start a visit.</p>
             {createVisit.isError && (
@@ -48,14 +38,14 @@ export default function CheckIn() {
               type="button"
               onClick={handleStartVisit}
               disabled={createVisit.isPending}
-              className="mt-6 w-full rounded-lg bg-blue-600 px-4 py-3 text-base font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className={`${btn.primary} ${size.lg} mt-6 w-full`}
             >
               {createVisit.isPending ? "Starting…" : "Start visit"}
             </button>
             <button
               type="button"
               onClick={() => navigate("/", { replace: true })}
-              className="mt-3 text-sm text-slate-600 hover:underline"
+              className={`mt-3 text-sm ${btn.ghost}`}
             >
               Back to check-in
             </button>
@@ -69,15 +59,21 @@ export default function CheckIn() {
               <button
                 type="button"
                 onClick={() => navigate("/guests/new")}
-                className="rounded-xl border-2 border-slate-200 bg-white p-10 text-lg font-medium text-slate-900 transition hover:border-blue-400 hover:bg-blue-50"
+                className="flex flex-col items-center gap-3 rounded-2xl border-2 border-slate-200 bg-white p-10 text-lg font-medium text-slate-900 transition hover:border-indigo-400 hover:bg-indigo-50"
               >
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
+                  <UserPlusIcon />
+                </span>
                 New guest
               </button>
               <button
                 type="button"
                 onClick={() => navigate("/guests/find")}
-                className="rounded-xl border-2 border-slate-200 bg-white p-10 text-lg font-medium text-slate-900 transition hover:border-blue-400 hover:bg-blue-50"
+                className="flex flex-col items-center gap-3 rounded-2xl border-2 border-slate-200 bg-white p-10 text-lg font-medium text-slate-900 transition hover:border-indigo-400 hover:bg-indigo-50"
               >
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
+                  <UsersIcon />
+                </span>
                 Returning guest
               </button>
             </div>
