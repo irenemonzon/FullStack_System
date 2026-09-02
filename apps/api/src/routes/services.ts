@@ -122,9 +122,8 @@ registry.registerPath({
 
 router.delete("/services/:id", async (req, res) => {
   const found = await withAuth(req.auth!, async (tx) => {
-    // service_supports has no ON DELETE CASCADE to services, so an
-    // information-station row's children must go first or the delete
-    // below fails on the FK constraint.
+    
+    
     await tx.delete(serviceSupports).where(eq(serviceSupports.serviceId, req.params.id));
 
     const [service] = await tx.delete(services).where(eq(services.id, req.params.id)).returning();
