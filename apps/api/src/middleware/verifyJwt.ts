@@ -13,9 +13,6 @@ declare global {
   }
 }
 
-// Verifies the Supabase-issued JWT and resolves the caller's role from
-// public.users — never from anything the client sends. Attaches
-// req.auth for downstream middleware/routes.
 export async function verifyJwt(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header?.startsWith("Bearer ")) {

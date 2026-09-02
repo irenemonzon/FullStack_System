@@ -6,11 +6,6 @@ import { registry } from "../lib/openapi.js";
 
 const router = Router();
 
-// Dev/testing convenience only — the real frontend calls
-// supabase.auth.signInWithPassword directly and never hits this route.
-// This just proxies to Supabase's password grant so tools like Postman
-// (or anyone without the JS SDK handy) can get a bearer token without
-// needing the Supabase URL/anon key themselves.
 registry.registerPath({
   method: "post",
   path: "/auth/login",
