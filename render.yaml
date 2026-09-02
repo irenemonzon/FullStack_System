@@ -27,7 +27,7 @@ services:
     healthCheckPath: /api/health
     envVars:
       - key: NODE_VERSION
-        value: 22
+        value: "22.20.0"
       - key: WEB_ORIGIN
         sync: false # TODO: the web service's URL, e.g. https://support-hub-web.onrender.com (no trailing slash — must exactly match the browser's Origin header for CORS)
       - key: SUPABASE_URL
@@ -45,11 +45,12 @@ services:
     buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter web build
     staticPublishPath: apps/web/dist
     routes:
-      - source: /*
+      - type: rewrite
+        source: /*
         destination: /index.html
     envVars:
       - key: NODE_VERSION
-        value: 22
+        value: "22.20.0"
       - key: VITE_API_URL
         sync: false # TODO: the api service's URL, e.g. https://support-hub-api.onrender.com (no trailing slash — apiClient.ts appends /api/... paths directly onto this)
       - key: VITE_SUPABASE_URL
