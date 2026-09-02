@@ -6,9 +6,6 @@ import { useGuest } from "../lib/queries/guests";
 import { useInventory, useSupportCategories, type CatalogueStation } from "../lib/queries/inventory";
 import SignOutButton from "../components/SignOutButton";
 
-// Screen 7 — recap by station, then "Confirm & finish" marks the visit
-// finished and returns to Check-in. RecordServices.tsx's "Finish visit"
-// only navigates here; nothing is finalized until this screen confirms.
 export default function VisitSummary() {
   const { visitId } = useParams<{ visitId: string }>();
   const navigate = useNavigate();

@@ -14,10 +14,6 @@ const inputClass =
   "mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200";
 const labelClass = "block text-sm font-medium text-slate-700";
 
-// Not part of the Figma-defined volunteer flow (Screens 1-7) — an admin-only
-// user management screen, gated by RequireAdmin at the route level and by
-// requireRole("admin") on every /api/users write. Volunteers/leads never
-// see the "Admin" link that opens this.
 export default function AdminUsers() {
   const { data: me } = useCurrentUser();
   const { data: users, isFetching } = useUsers(true);

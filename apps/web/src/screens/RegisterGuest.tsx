@@ -15,10 +15,6 @@ const inputClass =
   "mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200";
 const labelClass = "block text-sm font-medium text-slate-700";
 
-// Screen 3 — Register a new guest. Only name + gender are required;
-// the rest are shown as optional fields (see plan_project.md: the
-// Figma wireframe marks birth date/postcode as required, but the DB
-// schema/scope doc wins, so they stay optional here).
 export default function RegisterGuest() {
   const navigate = useNavigate();
   const createGuest = useCreateGuest();

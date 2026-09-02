@@ -31,10 +31,6 @@ function groupByItem(services: Service[], station: CatalogueStation): ItemTotal[
   return [...byItem.values()];
 }
 
-// Screen 4 — three station cards with quick-add steppers on items already
-// logged this visit, plus "Add item"/"Add information" opening Screens
-// 5/6 for a fresh item. "Finish visit" just navigates to the recap
-// (Screen 7) — nothing is marked finished until "Confirm & finish" there.
 export default function RecordServices() {
   const { visitId } = useParams<{ visitId: string }>();
   const navigate = useNavigate();

@@ -14,11 +14,6 @@ function itemLabel(item: InventoryItem): string {
   return details ? `${item.name} (${details})` : item.name;
 }
 
-// Screen 5 — per-item entry for kitchen/material_aid. Live "In stock: N" +
-// low-stock styling straight from quantity_on_hand/low_stock_threshold;
-// "Add to visit" is blocked client-side once the requested quantity would
-// exceed stock, and a 409 from the API (a race with another device) shows
-// the same message instead of silently failing.
 export default function AddItemModal({
   station,
   visitId,

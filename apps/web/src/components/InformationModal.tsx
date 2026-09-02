@@ -2,8 +2,6 @@ import { useState } from "react";
 import { useSupportCategories } from "../lib/queries/inventory";
 import { useCreateService } from "../lib/queries/services";
 
-// Screen 6 — information/signposting: multi-select the 8 support
-// categories plus one optional note for the whole entry.
 export default function InformationModal({ visitId, onClose }: { visitId: string; onClose: () => void }) {
   const { data: supports, isLoading } = useSupportCategories();
   const createService = useCreateService(visitId);

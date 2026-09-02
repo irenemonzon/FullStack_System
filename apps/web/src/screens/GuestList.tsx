@@ -4,10 +4,6 @@ import { useSession } from "../lib/useSession";
 import SignOutButton from "../components/SignOutButton";
 import NavTabs from "../components/NavTabs";
 
-// Not one of the Figma-defined volunteer screens — a small dev/admin
-// convenience to browse everything registered so far, since Stage 1's
-// UI otherwise only supports registering or searching for one guest at
-// a time. Reuses GET /api/guests with no filters (see guests.ts).
 export default function GuestList() {
   const { session } = useSession();
   const { data: guests, isFetching } = useGuestSearch({}, true);

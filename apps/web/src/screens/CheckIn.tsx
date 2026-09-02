@@ -7,9 +7,6 @@ import NavTabs from "../components/NavTabs";
 
 type LocationState = { guest?: Guest } | null;
 
-// Screen 1 — Check-in / Home. New guest / Returning guest start here; once
-// a guest is selected/registered, "Start visit" opens one (POST /api/visits)
-// and moves straight into RecordServices.tsx (Screen 4).
 export default function CheckIn() {
   const { session } = useSession();
   const navigate = useNavigate();

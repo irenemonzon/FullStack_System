@@ -6,10 +6,6 @@ const tabClass = ({ isActive }: { isActive: boolean }) =>
     isActive ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
   }`;
 
-// Inline tab group, meant to sit next to the "300 Blankets" name inside the
-// shared header — CheckIn.tsx, GuestList.tsx, AdminUsers.tsx all render it
-// there. "Admin" only renders once GET /api/users/me confirms the role,
-// same gate RequireAdmin uses for the route itself.
 export default function NavTabs() {
   const { data: me } = useCurrentUser();
 
