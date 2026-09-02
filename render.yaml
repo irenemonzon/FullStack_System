@@ -1,0 +1,58 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+#
+# Deploys both apps on Render's free tier:
+#   - support-hub-api  a persistent Node web service (apps/api)
+#   - support-hub-web  a static site (apps/web)
+#
+# apps/api's own "build"+"start" scripts (tsc -> node dist/index.js) don't
+# work standalone in this monorepo: db/ and packages/shared have no build
+# step by design (their package.json exports point straight at .ts source,
+# meant to be transpiled on the fly by tsx/Vite) and plain `node` can't
+# resolve those. startCommand below runs the API through tsx instead,
+# same as `pnpm dev:api` already does locally.
+#
+# One-time manual step after the first deploy: Render only assigns each
+# service's *.onrender.com URL once it exists, so the two envVars marked
+# sync: false below (WEB_ORIGIN and VITE_API_URL) can't be filled in until
+# then. Set them in the Render dashboard once both services are up, then
+# trigger a redeploy of each — see the TODO next to each one.
+
+services:
+  - type: web
+    name: support-hub-api
+    runtime: node
+    plan: free
+    buildCommand: corepack enable && pnpm install --frozen-lockfile
+    startCommand: pnpm --filter api exec tsx src/index.ts
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: WEB_ORIGIN
+        sync: false # TODO: the web service's URL, e.g. https://support-hub-web.onrender.com (no trailing slash — must exactly match the browser's Origin header for CORS)
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+
+  - type: web
+    name: support-hub-web
+    runtime: static
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter web build
+    staticPublishPath: apps/web/dist
+    routes:
+      - source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: VITE_API_URL
+        sync: false # TODO: the api service's URL, e.g. https://support-hub-api.onrender.com (no trailing slash — apiClient.ts appends /api/... paths directly onto this)
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
