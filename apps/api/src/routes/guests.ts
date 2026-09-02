@@ -13,11 +13,16 @@ registry.registerPath({
   method: "get",
   path: "/guests",
   description:
-    "Ranked returning-guest match search when any filter is given; the most recently registered guests (plain list) when none are",
+    "Call with no query parameters to list the 50 most recently registered guests. Give any filter (firstName, birthDate, postcode, phone) instead to run a ranked returning-guest match search.",
   tags: ["Guests"],
   security: [{ bearerAuth: [] }],
   request: { query: guestSearchQuerySchema },
-  responses: { 200: { description: "Matches or recent guests", content: { "application/json": { schema: z.array(guestSchema) } } } },
+  responses: {
+    200: {
+      description: "All guests (no filters) or ranked matches (filters given)",
+      content: { "application/json": { schema: z.array(guestSchema) } },
+    },
+  },
 });
 
 router.get("/", async (req, res) => {
@@ -65,11 +70,6 @@ router.get("/", async (req, res) => {
         notes: guests.notes,
         createdAt: guests.createdAt,
         updatedAt: guests.updatedAt,
-        // Drizzle strips the table qualifier from `${guests.id}` when it's part of a
-        // selected field's own SQL fragment (as opposed to a WHERE/ORDER BY clause),
-        // so the naive correlated form silently resolved to `visits.guest_id = visits.id`
-        // (both columns exist on `visits`) and always returned null. Aliasing the inner
-        // table and writing the outer reference as a literal `guests.id` avoids the collision.
         lastVisitAt: sql<string | null>`(select max(v.visited_at) from ${visits} v where v.guest_id = guests.id)`,
         score: scoreExpr.as("score"),
       })
