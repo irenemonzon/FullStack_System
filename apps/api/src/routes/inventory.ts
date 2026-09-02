@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { eq, and, type SQL } from "drizzle-orm";
+import { eq, and, asc, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import {
   inventoryQuerySchema,
@@ -55,7 +55,10 @@ router.get("/", async (req, res) => {
       .from(inventoryItems)
       .innerJoin(categories, eq(inventoryItems.categoryId, categories.id))
       .$dynamic();
-    return conditions.length ? query.where(and(...conditions)) : query;
+    const filtered = conditions.length ? query.where(and(...conditions)) : query;
+    // Stable ordering so the picklist doesn't reshuffle after a stock update
+    // (Postgres makes no ordering guarantee without ORDER BY).
+    return filtered.orderBy(asc(inventoryItems.name));
   });
   res.json(rows);
 });

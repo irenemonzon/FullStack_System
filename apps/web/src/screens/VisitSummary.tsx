@@ -4,7 +4,7 @@ import { useVisit, useFinishVisit } from "../lib/queries/visits";
 import { useGuest } from "../lib/queries/guests";
 import { useInventory, useSupportCategories, type CatalogueStation } from "../lib/queries/inventory";
 import AppHeader from "../components/AppHeader";
-import { CheckCircleIcon, Spinner } from "../components/icons";
+import { ArrowLeftIcon, CheckCircleIcon, Spinner } from "../components/icons";
 import { btn, card, size } from "../lib/ui";
 
 export default function VisitSummary() {
@@ -112,7 +112,14 @@ export default function VisitSummary() {
       </div>
 
       <footer className="fixed inset-x-0 bottom-0 border-t border-slate-200 bg-white/90 px-6 py-4 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-2xl justify-end">
+        <div className="mx-auto flex w-full max-w-2xl items-center justify-between">
+          <button
+            type="button"
+            onClick={() => navigate(`/visits/${visitId}/services`)}
+            className={`inline-flex items-center gap-1.5 text-sm ${btn.ghost}`}
+          >
+            <ArrowLeftIcon /> Back to edit visit
+          </button>
           <button
             type="button"
             onClick={handleConfirm}

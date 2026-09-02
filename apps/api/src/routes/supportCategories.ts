@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { asc } from "drizzle-orm";
 import { z } from "zod";
 import { supportCategorySchema } from "@support-hub/shared";
 import { withAuth, schema } from "../lib/db.js";
@@ -22,7 +23,9 @@ registry.registerPath({
 });
 
 router.get("/", async (req, res) => {
-  const rows = await withAuth(req.auth!, (tx) => tx.select().from(supportCategories));
+  // Stable ordering so the checklist doesn't reshuffle between fetches
+  // (Postgres makes no ordering guarantee without ORDER BY).
+  const rows = await withAuth(req.auth!, (tx) => tx.select().from(supportCategories).orderBy(asc(supportCategories.name)));
   res.json(rows);
 });
 
