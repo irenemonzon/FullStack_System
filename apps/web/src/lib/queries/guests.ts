@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CreateGuestInput, Guest, GuestSearchQuery, UpdateGuestInput } from "@support-hub/shared";
 import { apiClient } from "../apiClient";
 
-export type GuestMatch = Guest & { lastVisitAt: string | null; score: number };
+export type GuestMatch = Guest & { lastVisitAt: string | null; lastVisitId: string | null; score: number };
 
 function toQueryString(query: GuestSearchQuery): string {
   const params = new URLSearchParams();

@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import type { GuestSearchQuery } from "@support-hub/shared";
 import { useGuestSearch } from "../lib/queries/guests";
 import { parseDDMMYYToISO, formatRelativeTime } from "../lib/date";
-import { ArrowLeftIcon, InboxIcon, SearchIcon, Spinner } from "../components/icons";
+import LastVisitDetails from "../components/LastVisitDetails";
+import { ArrowLeftIcon, ChevronDownIcon, InboxIcon, SearchIcon, Spinner } from "../components/icons";
 import { btn, input, label, size } from "../lib/ui";
 
 function initials(name: string): string {
@@ -19,6 +20,7 @@ export default function FindGuest() {
   const [phone, setPhone] = useState("");
   const [query, setQuery] = useState<GuestSearchQuery | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [expandedGuestId, setExpandedGuestId] = useState<string | null>(null);
 
   const { data: matches, isFetching } = useGuestSearch(query ?? {}, query !== null);
 
@@ -139,33 +141,53 @@ export default function FindGuest() {
               </div>
             )}
             <ul className="mt-3 flex flex-col gap-3">
-              {matches?.map((guest) => (
-                <li
-                  key={guest.id}
-                  className="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 transition hover:border-slate-300"
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">
-                      {initials(guest.displayName)}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate font-medium text-slate-900">{guest.displayName}</p>
-                      <p className="truncate text-sm text-slate-500">
-                        {[guest.birthDate, guest.postcode].filter(Boolean).join(" · ")}
-                        {" · "}
-                        {formatRelativeTime(guest.lastVisitAt)}
-                      </p>
+              {matches?.map((guest) => {
+                const isExpanded = expandedGuestId === guest.id;
+                return (
+                  <li key={guest.id} className="rounded-xl border border-slate-200 bg-white transition hover:border-slate-300">
+                    <div className="flex items-center justify-between gap-4 p-4">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">
+                          {initials(guest.displayName)}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="truncate font-medium text-slate-900">{guest.displayName}</p>
+                          <p className="truncate text-sm text-slate-500">
+                            {[guest.birthDate, guest.postcode].filter(Boolean).join(" · ")}
+                            {" · "}
+                            {formatRelativeTime(guest.lastVisitAt)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        {guest.lastVisitId && (
+                          <button
+                            type="button"
+                            onClick={() => setExpandedGuestId(isExpanded ? null : guest.id)}
+                            aria-expanded={isExpanded}
+                            className={`inline-flex items-center gap-1 text-sm ${btn.ghost}`}
+                          >
+                            Last visit
+                            <ChevronDownIcon className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => navigate("/", { state: { guest } })}
+                          className={`${btn.secondary} ${size.sm}`}
+                        >
+                          Select
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => navigate("/", { state: { guest } })}
-                    className={`${btn.secondary} ${size.sm} shrink-0`}
-                  >
-                    Select
-                  </button>
-                </li>
-              ))}
+                    {isExpanded && guest.lastVisitId && (
+                      <div className="border-t border-slate-100 px-4 pb-2">
+                        <LastVisitDetails visitId={guest.lastVisitId} />
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </section>
         )}

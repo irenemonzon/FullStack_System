@@ -71,6 +71,7 @@ router.get("/", async (req, res) => {
         createdAt: guests.createdAt,
         updatedAt: guests.updatedAt,
         lastVisitAt: sql<string | null>`(select max(v.visited_at) from ${visits} v where v.guest_id = guests.id)`,
+        lastVisitId: sql<string | null>`(select v.id from ${visits} v where v.guest_id = guests.id order by v.visited_at desc limit 1)`,
         score: scoreExpr.as("score"),
       })
       .from(guests)
