@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { useGuestSearch } from "../lib/queries/guests";
 import { formatRelativeTime } from "../lib/date";
 import AppHeader from "../components/AppHeader";
-import { InboxIcon, Spinner } from "../components/icons";
+import LastVisitDetails from "../components/LastVisitDetails";
+import { ChevronDownIcon, InboxIcon, Spinner } from "../components/icons";
+import { btn } from "../lib/ui";
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/);
@@ -10,6 +13,7 @@ function initials(name: string): string {
 
 export default function GuestList() {
   const { data: guests, isFetching } = useGuestSearch({}, true);
+  const [expandedGuestId, setExpandedGuestId] = useState<string | null>(null);
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -33,22 +37,43 @@ export default function GuestList() {
         )}
 
         <ul className="mt-6 flex flex-col gap-3">
-          {guests?.map((guest) => (
-            <li
-              key={guest.id}
-              className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 transition hover:border-slate-300 hover:shadow-sm"
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">
-                {initials(guest.displayName)}
-              </span>
-              <div className="min-w-0">
-                <p className="truncate font-medium text-slate-900">{guest.displayName}</p>
-                <p className="truncate text-sm text-slate-500">
-                  {[guest.phone, guest.postcode, formatRelativeTime(guest.lastVisitAt)].filter(Boolean).join(" · ")}
-                </p>
-              </div>
-            </li>
-          ))}
+          {guests?.map((guest) => {
+            const isExpanded = expandedGuestId === guest.id;
+            return (
+              <li
+                key={guest.id}
+                className="rounded-xl border border-slate-200 bg-white transition hover:border-slate-300 hover:shadow-sm"
+              >
+                <div className="flex items-center gap-4 p-4">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">
+                    {initials(guest.displayName)}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium text-slate-900">{guest.displayName}</p>
+                    <p className="truncate text-sm text-slate-500">
+                      {[guest.phone, guest.postcode, formatRelativeTime(guest.lastVisitAt)].filter(Boolean).join(" · ")}
+                    </p>
+                  </div>
+                  {guest.lastVisitId && (
+                    <button
+                      type="button"
+                      onClick={() => setExpandedGuestId(isExpanded ? null : guest.id)}
+                      aria-expanded={isExpanded}
+                      className={`inline-flex shrink-0 items-center gap-1 text-sm ${btn.ghost}`}
+                    >
+                      Last visit
+                      <ChevronDownIcon className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                    </button>
+                  )}
+                </div>
+                {isExpanded && guest.lastVisitId && (
+                  <div className="border-t border-slate-100 px-4 pb-2">
+                    <LastVisitDetails visitId={guest.lastVisitId} />
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </main>
