@@ -4,7 +4,7 @@
   "description": "Register guests and log meals, material aid, and information support at the 300 Blankets drop-in centre.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#2563eb",
+  "background_color": "#ffffff",
+  "theme_color": "#ef7c01",
   "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
 }

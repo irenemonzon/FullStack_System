@@ -1,18 +1,18 @@
-export const card = "rounded-2xl border border-slate-200 bg-white shadow-sm";
+export const card = "rounded-2xl border border-neutral-200 bg-white shadow-sm";
 
 export const input =
-  "mt-1 w-full rounded-xl border border-slate-300 px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 transition focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100";
+  "mt-1 w-full rounded-xl border border-neutral-300 px-4 py-3 text-base text-neutral-900 placeholder:text-neutral-400 transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100";
 
-export const label = "block text-sm font-medium text-slate-700";
+export const label = "block text-sm font-medium text-neutral-700";
 
 export const btn = {
   primary:
-    "rounded-xl bg-indigo-600 font-semibold text-white shadow-sm transition hover:bg-indigo-700 active:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-50",
+    "rounded-xl bg-brand-500 font-semibold text-neutral-950 shadow-sm transition hover:bg-brand-600 active:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50",
   secondary:
-    "rounded-xl border border-slate-300 bg-white font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50",
+    "rounded-xl border border-neutral-300 bg-white font-semibold text-neutral-700 transition hover:border-neutral-400 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-50",
   danger:
     "rounded-xl border border-red-200 font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40",
-  ghost: "font-medium text-indigo-700 transition hover:text-indigo-800 hover:underline underline-offset-2",
+  ghost: "font-medium text-neutral-900 underline decoration-brand-500 decoration-2 transition hover:text-brand-700 hover:underline underline-offset-2",
 };
 
 export const size = {
