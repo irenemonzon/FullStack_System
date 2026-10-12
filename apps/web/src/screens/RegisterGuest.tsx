@@ -61,7 +61,7 @@ export default function RegisterGuest() {
 
     try {
       const guest = await createGuest.mutateAsync(parsed.data);
-      navigate("/", { state: { guest } });
+      navigate(`/guests/${guest.id}`, { replace: true });
     } catch {
       setError("Couldn't save this guest. Try again.");
     }
@@ -191,7 +191,7 @@ export default function RegisterGuest() {
           )}
 
           <button type="submit" disabled={createGuest.isPending} className={`${btn.primary} ${size.lg} w-full`}>
-            {createGuest.isPending ? "Saving…" : "Save & start visit"}
+            {createGuest.isPending ? "Saving…" : "Save guest"}
           </button>
         </form>
       </div>

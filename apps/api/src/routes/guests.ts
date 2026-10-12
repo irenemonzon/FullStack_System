@@ -1,11 +1,18 @@
 import { Router } from "express";
 import { eq, desc, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
-import { createGuestSchema, updateGuestSchema, guestSearchQuerySchema, guestSchema } from "@support-hub/shared";
+import {
+  createGuestSchema,
+  updateGuestSchema,
+  guestSearchQuerySchema,
+  guestSchema,
+  guestHistoryQuerySchema,
+} from "@support-hub/shared";
 import { withAuth, schema } from "../lib/db.js";
+import { loadServicesByVisit } from "../lib/visitServices.js";
 import { registry } from "../lib/openapi.js";
 
-const { guests, visits } = schema;
+const { guests, visits, services } = schema;
 
 const router = Router();
 
@@ -189,6 +196,64 @@ router.get("/:id/visits", async (req, res) => {
     tx.select().from(visits).where(eq(visits.guestId, req.params.id)).orderBy(desc(visits.visitedAt)),
   );
   res.json(rows);
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/guests/{id}/history",
+  description:
+    "A guest's help history for their profile page: lifetime totals per station plus one page of visits (most recent first), each with its logged services",
+  tags: ["Guests", "Visits"],
+  security: [{ bearerAuth: [] }],
+  request: { params: z.object({ id: z.string().uuid() }), query: guestHistoryQuerySchema },
+  responses: { 200: { description: "Totals and a page of visits with services" }, 400: { description: "Invalid query" } },
+});
+
+router.get("/:id/history", async (req, res) => {
+  const parsed = guestHistoryQuerySchema.safeParse(req.query);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.issues[0]?.message ?? "Invalid query" });
+    return;
+  }
+  const { limit, offset } = parsed.data;
+  const guestId = req.params.id;
+
+  const result = await withAuth(req.auth!, async (tx) => {
+    // Kitchen/material aid count items given (sum of quantities);
+    // information counts signposting entries, which carry no quantity.
+    const [totals] = await tx
+      .select({
+        visits: sql<number>`count(distinct ${visits.id})::int`,
+        firstVisitAt: sql<string | null>`min(${visits.visitedAt})`,
+        kitchen: sql<number>`coalesce(sum(${services.quantity}) filter (where ${services.station} = 'kitchen'), 0)::int`,
+        materialAid: sql<number>`coalesce(sum(${services.quantity}) filter (where ${services.station} = 'material_aid'), 0)::int`,
+        information: sql<number>`(count(${services.id}) filter (where ${services.station} = 'information'))::int`,
+      })
+      .from(visits)
+      .leftJoin(services, eq(services.visitId, visits.id))
+      .where(eq(visits.guestId, guestId));
+
+    // Fetch one extra row to know whether there's another page.
+    const page = await tx
+      .select()
+      .from(visits)
+      .where(eq(visits.guestId, guestId))
+      .orderBy(desc(visits.visitedAt))
+      .limit(limit + 1)
+      .offset(offset);
+    const pageVisits = page.slice(0, limit);
+    const servicesByVisit = await loadServicesByVisit(
+      tx,
+      pageVisits.map((v) => v.id),
+    );
+
+    return {
+      totals,
+      visits: pageVisits.map((v) => ({ ...v, services: servicesByVisit.get(v.id) ?? [] })),
+      hasMore: page.length > limit,
+    };
+  });
+  res.json(result);
 });
 
 export default router;

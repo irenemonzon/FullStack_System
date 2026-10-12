@@ -28,3 +28,10 @@ export const visitSchema = z.object({
   notes: z.string().nullable(),
 });
 export type Visit = z.infer<typeof visitSchema>;
+
+// Paging for a guest's visit history (GET /api/guests/:id/history).
+export const guestHistoryQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(50).default(5),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+export type GuestHistoryQuery = z.infer<typeof guestHistoryQuerySchema>;

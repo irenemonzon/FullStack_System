@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useGuestSearch } from "../lib/queries/guests";
 import { formatRelativeTime } from "../lib/date";
 import AppHeader from "../components/AppHeader";
@@ -49,7 +50,12 @@ export default function GuestList() {
                     {initials(guest.displayName)}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-neutral-900">{guest.displayName}</p>
+                    <Link
+                      to={`/guests/${guest.id}`}
+                      className="block truncate font-medium text-neutral-900 underline-offset-2 hover:text-brand-700 hover:underline"
+                    >
+                      {guest.displayName}
+                    </Link>
                     <p className="truncate text-sm text-neutral-500">
                       {[guest.phone, guest.postcode, formatRelativeTime(guest.lastVisitAt)].filter(Boolean).join(" · ")}
                     </p>

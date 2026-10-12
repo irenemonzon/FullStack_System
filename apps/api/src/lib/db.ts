@@ -22,7 +22,7 @@ export const db = drizzle(client, { schema });
 // caller passing the wrong role can't escalate privileges through here.
 export type AuthContext = { userId: string; role: string } | null;
 
-type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+export type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 // Runs `fn` inside a transaction scoped to the given auth context: sets
 // request.jwt.claims (so auth.uid() resolves) and switches the session
