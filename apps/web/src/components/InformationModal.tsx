@@ -26,18 +26,18 @@ export default function InformationModal({ visitId, onClose }: { visitId: string
   }
 
   return (
-    <div className="fixed inset-0 z-20 flex items-end justify-center bg-slate-900/40 backdrop-blur-sm sm:items-center">
+    <div className="fixed inset-0 z-20 flex items-end justify-center bg-neutral-900/40 backdrop-blur-sm sm:items-center">
       <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white p-6 shadow-xl sm:rounded-2xl">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">Information & signposting</h2>
+          <h2 className="text-lg font-semibold text-neutral-900">Information & signposting</h2>
           <button type="button" onClick={onClose} className={`text-sm ${btn.ghost}`}>
             Close
           </button>
         </div>
-        <p className="mt-1 text-sm text-slate-600">Select every support that was signposted.</p>
+        <p className="mt-1 text-sm text-neutral-600">Select every support that was signposted.</p>
 
         {isLoading && (
-          <div className="mt-4 flex items-center gap-2 text-slate-400">
+          <div className="mt-4 flex items-center gap-2 text-neutral-400">
             <Spinner className="h-5 w-5" />
             <span className="text-sm">Loading supports…</span>
           </div>
@@ -48,16 +48,16 @@ export default function InformationModal({ visitId, onClose }: { visitId: string
             <label
               key={support.id}
               className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 px-4 py-3 transition ${
-                selected.includes(support.id) ? "border-indigo-500 bg-indigo-50" : "border-slate-200 hover:border-slate-300"
+                selected.includes(support.id) ? "border-brand-500 bg-brand-50" : "border-neutral-200 hover:border-neutral-300"
               }`}
             >
               <input
                 type="checkbox"
                 checked={selected.includes(support.id)}
                 onChange={() => toggle(support.id)}
-                className="h-4 w-4 accent-indigo-600"
+                className="h-4 w-4 accent-brand-600"
               />
-              <span className="text-sm font-medium text-slate-900">{support.name}</span>
+              <span className="text-sm font-medium text-neutral-900">{support.name}</span>
             </label>
           ))}
         </div>

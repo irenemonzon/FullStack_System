@@ -60,14 +60,14 @@ export default function Login() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 via-slate-50 to-white px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-lg shadow-slate-200/50">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white px-4">
+      <div aria-hidden className="pointer-events-none absolute -right-48 -top-48 h-[28rem] w-[28rem] rounded-full bg-brand-500" />
+      <div className="relative w-full max-w-sm rounded-2xl border border-neutral-200 bg-white p-8 shadow-lg shadow-neutral-200/50">
         <div className="flex flex-col items-center text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-lg font-bold text-white">
-            3B
-          </span>
-          <h1 className="mt-4 text-xl font-semibold text-slate-900">300 Blankets</h1>
-          <p className="text-sm text-slate-500">Support Hub</p>
+          <h1>
+            <img src="/logo.png" alt="300 Blankets" className="h-16 w-auto" />
+          </h1>
+          <p className="mt-3 text-sm font-semibold uppercase tracking-widest text-brand-700">Support Hub</p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">

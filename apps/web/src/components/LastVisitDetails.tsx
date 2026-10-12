@@ -9,7 +9,7 @@ export default function LastVisitDetails({ visitId }: { visitId: string }) {
 
   if (isLoading || !visit) {
     return (
-      <div className="flex items-center gap-2 py-4 text-slate-400">
+      <div className="flex items-center gap-2 py-4 text-neutral-400">
         <Spinner className="h-4 w-4" />
         <span className="text-sm">Loading last visit…</span>
       </div>

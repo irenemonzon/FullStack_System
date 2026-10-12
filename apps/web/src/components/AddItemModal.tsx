@@ -52,17 +52,17 @@ export default function AddItemModal({
   }
 
   return (
-    <div className="fixed inset-0 z-20 flex items-end justify-center bg-slate-900/40 backdrop-blur-sm sm:items-center">
+    <div className="fixed inset-0 z-20 flex items-end justify-center bg-neutral-900/40 backdrop-blur-sm sm:items-center">
       <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white p-6 shadow-xl sm:rounded-2xl">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">Add {STATION_LABEL[station]} item</h2>
+          <h2 className="text-lg font-semibold text-neutral-900">Add {STATION_LABEL[station]} item</h2>
           <button type="button" onClick={onClose} className={`text-sm ${btn.ghost}`}>
             Close
           </button>
         </div>
 
         {isLoading && (
-          <div className="mt-4 flex items-center gap-2 text-slate-400">
+          <div className="mt-4 flex items-center gap-2 text-neutral-400">
             <Spinner className="h-5 w-5" />
             <span className="text-sm">Loading items…</span>
           </div>
@@ -79,12 +79,12 @@ export default function AddItemModal({
                   type="button"
                   onClick={() => selectItem(item)}
                   className={`flex w-full items-center justify-between rounded-xl border-2 px-4 py-3 text-left transition ${
-                    selected ? "border-indigo-500 bg-indigo-50" : "border-slate-200 hover:border-slate-300"
+                    selected ? "border-brand-500 bg-brand-50" : "border-neutral-200 hover:border-neutral-300"
                   }`}
                 >
-                  <span className="font-medium text-slate-900">{itemLabel(item)}</span>
+                  <span className="font-medium text-neutral-900">{itemLabel(item)}</span>
                   {item.quantityOnHand != null && (
-                    <span className={`${pill} ${lowStock ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+                    <span className={`${pill} ${lowStock ? "bg-amber-100 text-amber-800" : "bg-neutral-100 text-neutral-600"}`}>
                       {lowStock && <AlertTriangleIcon />}
                       In stock: {item.quantityOnHand}
                     </span>
@@ -96,11 +96,11 @@ export default function AddItemModal({
         </ul>
 
         {selectedItem && (
-          <div className="mt-6 rounded-xl border border-slate-200 p-4">
+          <div className="mt-6 rounded-xl border border-neutral-200 p-4">
             <div className="flex items-center justify-between">
-              <p className="font-medium text-slate-900">{itemLabel(selectedItem)}</p>
+              <p className="font-medium text-neutral-900">{itemLabel(selectedItem)}</p>
               {selectedItem.quantityOnHand != null && (
-                <span className={`${pill} ${isLowStock ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+                <span className={`${pill} ${isLowStock ? "bg-amber-100 text-amber-800" : "bg-neutral-100 text-neutral-600"}`}>
                   {isLowStock && <AlertTriangleIcon />}
                   In stock: {selectedItem.quantityOnHand}
                 </span>
@@ -111,16 +111,16 @@ export default function AddItemModal({
               <button
                 type="button"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                className="h-10 w-10 rounded-xl border border-slate-300 text-lg font-semibold text-slate-700 transition hover:bg-slate-50"
+                className="h-10 w-10 rounded-xl border border-neutral-300 text-lg font-semibold text-neutral-700 transition hover:bg-neutral-50"
                 aria-label="Decrease quantity"
               >
                 −
               </button>
-              <span className="w-8 text-center text-lg font-semibold text-slate-900">{quantity}</span>
+              <span className="w-8 text-center text-lg font-semibold text-neutral-900">{quantity}</span>
               <button
                 type="button"
                 onClick={() => setQuantity((q) => q + 1)}
-                className="h-10 w-10 rounded-xl border border-slate-300 text-lg font-semibold text-slate-700 transition hover:bg-slate-50"
+                className="h-10 w-10 rounded-xl border border-neutral-300 text-lg font-semibold text-neutral-700 transition hover:bg-neutral-50"
                 aria-label="Increase quantity"
               >
                 +

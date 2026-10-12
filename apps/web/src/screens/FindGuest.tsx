@@ -48,7 +48,7 @@ export default function FindGuest() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-8">
+    <main className="min-h-screen bg-neutral-50 px-6 py-8">
       <div className="mx-auto w-full max-w-2xl">
         <button
           type="button"
@@ -58,8 +58,8 @@ export default function FindGuest() {
           <ArrowLeftIcon /> Back
         </button>
 
-        <h1 className="mt-4 text-2xl font-semibold text-slate-900">Find a returning guest</h1>
-        <p className="mt-1 text-slate-600">Search by anything the guest is happy to share. Any one field is enough.</p>
+        <h1 className="mt-4 text-2xl font-semibold text-neutral-900">Find a returning guest</h1>
+        <p className="mt-1 text-neutral-600">Search by anything the guest is happy to share. Any one field is enough.</p>
 
         <form onSubmit={handleSearch} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
@@ -127,32 +127,32 @@ export default function FindGuest() {
 
         {query && (
           <section className="mt-8">
-            <h2 className="text-lg font-semibold text-slate-900">Possible matches</h2>
+            <h2 className="text-lg font-semibold text-neutral-900">Possible matches</h2>
             {isFetching && (
-              <div className="mt-3 flex items-center gap-2 text-slate-400">
+              <div className="mt-3 flex items-center gap-2 text-neutral-400">
                 <Spinner className="h-5 w-5" />
                 <span className="text-sm">Searching…</span>
               </div>
             )}
             {!isFetching && matches?.length === 0 && (
-              <div className="mt-4 flex flex-col items-center gap-2 py-4 text-center text-slate-400">
+              <div className="mt-4 flex flex-col items-center gap-2 py-4 text-center text-neutral-400">
                 <InboxIcon className="h-7 w-7" />
-                <p className="text-sm text-slate-500">No matches found.</p>
+                <p className="text-sm text-neutral-500">No matches found.</p>
               </div>
             )}
             <ul className="mt-3 flex flex-col gap-3">
               {matches?.map((guest) => {
                 const isExpanded = expandedGuestId === guest.id;
                 return (
-                  <li key={guest.id} className="rounded-xl border border-slate-200 bg-white transition hover:border-slate-300">
+                  <li key={guest.id} className="rounded-xl border border-neutral-200 bg-white transition hover:border-neutral-300">
                     <div className="flex items-center justify-between gap-4 p-4">
                       <div className="flex min-w-0 items-center gap-3">
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700">
                           {initials(guest.displayName)}
                         </span>
                         <div className="min-w-0">
-                          <p className="truncate font-medium text-slate-900">{guest.displayName}</p>
-                          <p className="truncate text-sm text-slate-500">
+                          <p className="truncate font-medium text-neutral-900">{guest.displayName}</p>
+                          <p className="truncate text-sm text-neutral-500">
                             {[guest.birthDate, guest.postcode].filter(Boolean).join(" · ")}
                             {" · "}
                             {formatRelativeTime(guest.lastVisitAt)}
@@ -181,7 +181,7 @@ export default function FindGuest() {
                       </div>
                     </div>
                     {isExpanded && guest.lastVisitId && (
-                      <div className="border-t border-slate-100 px-4 pb-2">
+                      <div className="border-t border-neutral-100 px-4 pb-2">
                         <LastVisitDetails visitId={guest.lastVisitId} />
                       </div>
                     )}

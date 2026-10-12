@@ -73,7 +73,7 @@ export default function RecordServices() {
 
   if (visitLoading || !visit) {
     return (
-      <div className="flex min-h-screen items-center justify-center gap-2 text-slate-400">
+      <div className="flex min-h-screen items-center justify-center gap-2 text-neutral-400">
         <Spinner className="h-5 w-5" />
         <span className="text-sm">Loading visit…</span>
       </div>
@@ -81,16 +81,16 @@ export default function RecordServices() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-28">
+    <main className="min-h-screen bg-neutral-50 pb-28">
       <AppHeader />
 
       <div className="mx-auto w-full max-w-2xl px-6 py-8">
-        <h1 className="text-2xl font-semibold text-slate-900">Recording visit for {guest?.displayName ?? "guest"}</h1>
+        <h1 className="text-2xl font-semibold text-neutral-900">Recording visit for {guest?.displayName ?? "guest"}</h1>
 
         <section className={`${card} mt-6 p-5`}>
           <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
-              <UtensilsIcon className="h-5 w-5 text-indigo-600" /> Kitchen
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900">
+              <UtensilsIcon className="h-5 w-5 text-brand-600" /> Kitchen
             </h2>
             <button type="button" onClick={() => setModal("kitchen")} className={`${btn.secondary} ${size.sm}`}>
               Add item
@@ -105,8 +105,8 @@ export default function RecordServices() {
 
         <section className={`${card} mt-4 p-5`}>
           <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
-              <BoxIcon className="h-5 w-5 text-indigo-600" /> Material aid
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900">
+              <BoxIcon className="h-5 w-5 text-brand-600" /> Material aid
             </h2>
             <button type="button" onClick={() => setModal("material_aid")} className={`${btn.secondary} ${size.sm}`}>
               Add item
@@ -121,24 +121,24 @@ export default function RecordServices() {
 
         <section className={`${card} mt-4 p-5`}>
           <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
-              <InfoIcon className="h-5 w-5 text-indigo-600" /> Information
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900">
+              <InfoIcon className="h-5 w-5 text-brand-600" /> Information
             </h2>
             <button type="button" onClick={() => setModal("information")} className={`${btn.secondary} ${size.sm}`}>
               Add information
             </button>
           </div>
           {informationServices.length === 0 ? (
-            <p className="mt-3 text-sm text-slate-500">Nothing signposted yet.</p>
+            <p className="mt-3 text-sm text-neutral-500">Nothing signposted yet.</p>
           ) : (
             <ul className="mt-3 flex flex-col gap-2">
               {informationServices.map((service) => (
-                <li key={service.id} className="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-2">
+                <li key={service.id} className="flex items-center justify-between rounded-xl border border-neutral-200 px-4 py-2">
                   <div>
-                    <p className="text-sm font-medium text-slate-900">
+                    <p className="text-sm font-medium text-neutral-900">
                       {(service.supportCategoryIds ?? []).map(supportName).join(", ") || "Signposted"}
                     </p>
-                    {service.details?.notes && <p className="text-sm text-slate-500">{service.details.notes}</p>}
+                    {service.details?.notes && <p className="text-sm text-neutral-500">{service.details.notes}</p>}
                   </div>
                   <button
                     type="button"
@@ -154,12 +154,12 @@ export default function RecordServices() {
         </section>
       </div>
 
-      <footer className="fixed inset-x-0 bottom-0 border-t border-slate-200 bg-white/90 px-6 py-4 backdrop-blur">
+      <footer className="fixed inset-x-0 bottom-0 border-t border-neutral-200 bg-white/90 px-6 py-4 backdrop-blur">
         <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-4">
           <div className="flex gap-2">
-            <span className={`${pill} bg-slate-100 text-slate-700`}>Kitchen: {kitchenCount}</span>
-            <span className={`${pill} bg-slate-100 text-slate-700`}>Material aid: {materialAidCount}</span>
-            <span className={`${pill} bg-slate-100 text-slate-700`}>Information: {informationCount}</span>
+            <span className={`${pill} bg-neutral-100 text-neutral-700`}>Kitchen: {kitchenCount}</span>
+            <span className={`${pill} bg-neutral-100 text-neutral-700`}>Material aid: {materialAidCount}</span>
+            <span className={`${pill} bg-neutral-100 text-neutral-700`}>Information: {informationCount}</span>
           </div>
           <button
             type="button"
@@ -190,20 +190,20 @@ function StationItemList({
   onRemoveOne: (serviceId: string) => void;
 }) {
   if (totals.length === 0) {
-    return <p className="mt-3 text-sm text-slate-500">Nothing logged yet.</p>;
+    return <p className="mt-3 text-sm text-neutral-500">Nothing logged yet.</p>;
   }
   return (
     <ul className="mt-3 flex flex-col gap-2">
       {totals.map((total) => (
-        <li key={total.itemId} className="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-2">
-          <span className="text-sm font-medium text-slate-900">{resolveName(total.itemId)}</span>
+        <li key={total.itemId} className="flex items-center justify-between rounded-xl border border-neutral-200 px-4 py-2">
+          <span className="text-sm font-medium text-neutral-900">{resolveName(total.itemId)}</span>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-slate-600">× {total.quantity}</span>
+            <span className="text-sm text-neutral-600">× {total.quantity}</span>
             <button
               type="button"
               onClick={() => onRemoveOne(total.serviceIds[total.serviceIds.length - 1])}
               aria-label={`Remove one ${resolveName(total.itemId)}`}
-              className="h-8 w-8 rounded-lg border border-slate-300 text-base font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="h-8 w-8 rounded-lg border border-neutral-300 text-base font-semibold text-neutral-700 transition hover:bg-neutral-50"
             >
               −
             </button>

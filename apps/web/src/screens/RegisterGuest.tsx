@@ -68,7 +68,7 @@ export default function RegisterGuest() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-8">
+    <main className="min-h-screen bg-neutral-50 px-6 py-8">
       <div className="mx-auto w-full max-w-2xl">
         <button
           type="button"
@@ -78,7 +78,7 @@ export default function RegisterGuest() {
           <ArrowLeftIcon /> Back
         </button>
 
-        <h1 className="mt-4 text-2xl font-semibold text-slate-900">Register guest</h1>
+        <h1 className="mt-4 text-2xl font-semibold text-neutral-900">Register guest</h1>
 
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-6">
           <div>
@@ -108,7 +108,7 @@ export default function RegisterGuest() {
                     onChange={() => setGender(g.value)}
                     className="peer sr-only"
                   />
-                  <span className="block rounded-xl border-2 border-slate-200 px-3 py-3 text-center text-sm font-medium text-slate-700 transition peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 hover:border-slate-300">
+                  <span className="block rounded-xl border-2 border-neutral-200 px-3 py-3 text-center text-sm font-medium text-neutral-700 transition peer-checked:border-brand-500 peer-checked:bg-brand-50 peer-checked:text-brand-700 hover:border-neutral-300">
                     {g.label}
                   </span>
                 </label>
