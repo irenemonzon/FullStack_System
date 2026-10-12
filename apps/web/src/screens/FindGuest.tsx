@@ -2,7 +2,8 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import type { GuestSearchQuery } from "@support-hub/shared";
 import { useGuestSearch } from "../lib/queries/guests";
-import { parseDDMMYYToISO, formatRelativeTime } from "../lib/date";
+import { BIRTH_DATE_ERROR, formatBirthDate, formatRelativeTime, parseBirthDate } from "../lib/date";
+import BirthDateInput from "../components/BirthDateInput";
 import LastVisitDetails from "../components/LastVisitDetails";
 import { ArrowLeftIcon, ChevronDownIcon, InboxIcon, SearchIcon, Spinner } from "../components/icons";
 import { btn, input, label, size } from "../lib/ui";
@@ -28,9 +29,9 @@ export default function FindGuest() {
     e.preventDefault();
     setError(null);
 
-    const birthDate = birthDateInput ? parseDDMMYYToISO(birthDateInput) : undefined;
+    const birthDate = birthDateInput ? parseBirthDate(birthDateInput) : undefined;
     if (birthDateInput && !birthDate) {
-      setError("Birth date should be DD/MM/YY or DD/MM/YYYY");
+      setError(BIRTH_DATE_ERROR);
       return;
     }
 
@@ -79,13 +80,7 @@ export default function FindGuest() {
             <label htmlFor="birthDate" className={label}>
               Birth date
             </label>
-            <input
-              id="birthDate"
-              value={birthDateInput}
-              onChange={(e) => setBirthDateInput(e.target.value)}
-              placeholder="e.g. DD/MM/YYYY"
-              className={input}
-            />
+            <BirthDateInput id="birthDate" value={birthDateInput} onChange={setBirthDateInput} />
           </div>
 
           <div>
@@ -153,7 +148,7 @@ export default function FindGuest() {
                         <div className="min-w-0">
                           <p className="truncate font-medium text-neutral-900">{guest.displayName}</p>
                           <p className="truncate text-sm text-neutral-500">
-                            {[guest.birthDate, guest.postcode].filter(Boolean).join(" · ")}
+                            {[guest.birthDate && formatBirthDate(guest.birthDate), guest.postcode].filter(Boolean).join(" · ")}
                             {" · "}
                             {formatRelativeTime(guest.lastVisitAt)}
                           </p>

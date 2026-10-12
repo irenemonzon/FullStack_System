@@ -6,6 +6,7 @@ import { useCreateVisit, type VisitWithServices } from "../lib/queries/visits";
 import { useInventory, useSupportCategories, type CatalogueStation } from "../lib/queries/inventory";
 import AppHeader from "../components/AppHeader";
 import VisitServicesBreakdown from "../components/VisitServicesBreakdown";
+import { formatBirthDate } from "../lib/date";
 import { ArrowLeftIcon, ChevronDownIcon, InboxIcon, Spinner } from "../components/icons";
 import { btn, card, pill, size } from "../lib/ui";
 
@@ -18,12 +19,6 @@ const GENDER_LABELS: Record<Guest["gender"], string> = {
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" });
-}
-
-// birth_date is a plain YYYY-MM-DD date, shown the way it's entered.
-function formatBirthDate(iso: string): string {
-  const [year, month, day] = iso.split("-");
-  return `${day}/${month}/${year}`;
 }
 
 function isToday(iso: string): boolean {

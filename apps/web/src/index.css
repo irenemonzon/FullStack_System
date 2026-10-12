@@ -21,3 +21,12 @@ body {
 ::selection {
   @apply bg-brand-100 text-brand-900;
 }
+
+/* react-day-picker (birth date field) in brand colours. */
+.birth-date-picker .rdp-root {
+  --rdp-accent-color: var(--color-brand-600);
+  --rdp-accent-background-color: var(--color-brand-50);
+  --rdp-today-color: var(--color-brand-700);
+  --rdp-day-height: 40px;
+  --rdp-day-width: 40px;
+}

@@ -13,7 +13,9 @@
     "@supabase/supabase-js": "^2.45.0",
     "@support-hub/shared": "workspace:*",
     "@tanstack/react-query": "^5.56.0",
+    "date-fns": "^4.1.0",
     "react": "^19.2.8",
+    "react-day-picker": "^9.11.1",
     "react-dom": "^19.2.8",
     "react-router-dom": "^6.26.0"
   },
