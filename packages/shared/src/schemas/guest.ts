@@ -5,7 +5,8 @@ export const genderEnum = z.enum(["woman", "man", "non_binary", "prefer_not_to_s
 export const createGuestSchema = z.object({
   displayName: z.string().min(1, "Name is required"),
   gender: genderEnum,
-  birthDate: z.string().date("Birth date must be YYYY-MM-DD").optional(),
+  // Sent as ISO YYYY-MM-DD; the web app converts from the DD/MM/YYYY it shows.
+  birthDate: z.string().date("Birth date must be a valid date").optional(),
   postcode: z.string().min(1).optional(),
   phone: z.string().min(1).optional(),
   preferredLanguage: z.string().min(1).optional(),

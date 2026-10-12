@@ -2,7 +2,8 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { createGuestSchema, type CreateGuestInput } from "@support-hub/shared";
 import { useCreateGuest } from "../lib/queries/guests";
-import { parseDDMMYYToISO } from "../lib/date";
+import { BIRTH_DATE_ERROR, parseBirthDate } from "../lib/date";
+import BirthDateInput from "../components/BirthDateInput";
 import { ArrowLeftIcon } from "../components/icons";
 import { btn, input, label, size } from "../lib/ui";
 
@@ -36,9 +37,9 @@ export default function RegisterGuest() {
       return;
     }
 
-    const birthDate = birthDateInput ? parseDDMMYYToISO(birthDateInput) : undefined;
+    const birthDate = birthDateInput ? parseBirthDate(birthDateInput) : undefined;
     if (birthDateInput && !birthDate) {
-      setError("Birth date should be DD/MM/YY or DD/MM/YYYY");
+      setError(BIRTH_DATE_ERROR);
       return;
     }
 
@@ -121,13 +122,7 @@ export default function RegisterGuest() {
               <label htmlFor="birthDate" className={label}>
                 Birth date
               </label>
-              <input
-                id="birthDate"
-                value={birthDateInput}
-                onChange={(e) => setBirthDateInput(e.target.value)}
-                placeholder="e.g. DD/MM/YYYY"
-                className={input}
-              />
+              <BirthDateInput id="birthDate" value={birthDateInput} onChange={setBirthDateInput} />
             </div>
 
             <div>

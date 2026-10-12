@@ -1,16 +1,26 @@
-// Guests' birth dates are entered as DD/MM/YY (per the Figma wireframes),
-// but a 4-digit year (DD/MM/YYYY) is also accepted since most guests are
-// adults and a full birth year is less error-prone to type than 2 digits.
-// Stored/sent as ISO (YYYY-MM-DD). Returns undefined if the input doesn't
-// look like a full date yet, so callers can just omit the field rather
-// than send a malformed date to the API.
-export function parseDDMMYYToISO(input: string): string | undefined {
-  const match = /^(\d{2})\/(\d{2})\/(\d{2}|\d{4})$/.exec(input.trim());
-  if (!match) return undefined;
-  const [, dd, mm, yy] = match;
-  const year = yy.length === 4 ? yy : Number(yy) <= 30 ? `20${yy}` : `19${yy}`;
-  return `${year}-${mm}-${dd}`;
+import { format, isAfter, isValid, parse } from "date-fns";
+
+// Guests' birth dates are entered and shown as DD/MM/YYYY, but stored and
+// sent to the API as ISO (YYYY-MM-DD).
+export const BIRTH_DATE_FORMAT = "dd/MM/yyyy";
+export const EARLIEST_BIRTH_DATE = new Date(1900, 0, 1);
+
+// Returns undefined unless the input is a real, non-future calendar date in
+// DD/MM/YYYY — strict parsing rejects e.g. 31/02/1990 rather than rolling it
+// over into March.
+export function parseBirthDate(input: string): string | undefined {
+  const trimmed = input.trim();
+  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(trimmed)) return undefined;
+  const date = parse(trimmed, BIRTH_DATE_FORMAT, new Date());
+  if (!isValid(date) || isAfter(date, new Date()) || date < EARLIEST_BIRTH_DATE) return undefined;
+  return format(date, "yyyy-MM-dd");
 }
+
+export function formatBirthDate(iso: string): string {
+  return format(parse(iso, "yyyy-MM-dd", new Date()), BIRTH_DATE_FORMAT);
+}
+
+export const BIRTH_DATE_ERROR = "Birth date should be a real date in DD/MM/YYYY, e.g. 05/09/1985";
 
 export function formatRelativeTime(iso: string | null): string {
   if (!iso) return "no previous visits";
