@@ -15,6 +15,12 @@ export const createGuestSchema = z.object({
 });
 export type CreateGuestInput = z.infer<typeof createGuestSchema>;
 
+// POST /api/guests?allowDuplicate=true skips the duplicate check, once the
+// volunteer has confirmed the possible match is a different person.
+export const createGuestQuerySchema = z.object({
+  allowDuplicate: z.enum(["true", "false"]).optional(),
+});
+
 export const updateGuestSchema = createGuestSchema.partial();
 export type UpdateGuestInput = z.infer<typeof updateGuestSchema>;
 

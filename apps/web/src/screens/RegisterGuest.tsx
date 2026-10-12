@@ -1,7 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { createGuestSchema, type CreateGuestInput } from "@support-hub/shared";
-import { useCreateGuest } from "../lib/queries/guests";
+import { useCreateGuest, type DuplicateGuest } from "../lib/queries/guests";
+import { ApiError } from "../lib/apiClient";
+import DuplicateGuestWarning from "../components/DuplicateGuestWarning";
 import { BIRTH_DATE_ERROR, parseBirthDate } from "../lib/date";
 import BirthDateInput from "../components/BirthDateInput";
 import { ArrowLeftIcon } from "../components/icons";
@@ -27,20 +29,20 @@ export default function RegisterGuest() {
   const [dietary, setDietary] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [duplicates, setDuplicates] = useState<DuplicateGuest[] | null>(null);
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    setError(null);
-
+  // Validates the form as it currently stands; sets the error and returns
+  // null if something needs fixing.
+  function buildPayload(): CreateGuestInput | null {
     if (!gender) {
       setError("Please select a gender.");
-      return;
+      return null;
     }
 
     const birthDate = birthDateInput ? parseBirthDate(birthDateInput) : undefined;
     if (birthDateInput && !birthDate) {
       setError(BIRTH_DATE_ERROR);
-      return;
+      return null;
     }
 
     const payload: CreateGuestInput = {
@@ -57,15 +59,32 @@ export default function RegisterGuest() {
     const parsed = createGuestSchema.safeParse(payload);
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Please check your details");
-      return;
+      return null;
     }
+    return parsed.data;
+  }
+
+  async function save(allowDuplicate: boolean) {
+    setError(null);
+    setDuplicates(null);
+    const input = buildPayload();
+    if (!input) return;
 
     try {
-      const guest = await createGuest.mutateAsync(parsed.data);
+      const guest = await createGuest.mutateAsync({ input, allowDuplicate });
       navigate(`/guests/${guest.id}`, { replace: true });
-    } catch {
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 409 && Array.isArray(err.body.duplicates)) {
+        setDuplicates(err.body.duplicates as DuplicateGuest[]);
+        return;
+      }
       setError("Couldn't save this guest. Try again.");
     }
+  }
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    save(false);
   }
 
   return (
@@ -185,7 +204,20 @@ export default function RegisterGuest() {
             </p>
           )}
 
-          <button type="submit" disabled={createGuest.isPending} className={`${btn.primary} ${size.lg} w-full`}>
+          {duplicates && (
+            <DuplicateGuestWarning
+              duplicates={duplicates}
+              onOpen={(id) => navigate(`/guests/${id}`, { replace: true })}
+              onRegisterAnyway={() => save(true)}
+              registering={createGuest.isPending}
+            />
+          )}
+
+          <button
+            type="submit"
+            disabled={createGuest.isPending || !!duplicates}
+            className={`${btn.primary} ${size.lg} w-full ${duplicates ? "hidden" : ""}`}
+          >
             {createGuest.isPending ? "Saving…" : "Save guest"}
           </button>
         </form>

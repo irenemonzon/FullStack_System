@@ -2,6 +2,19 @@ import { supabase } from "./supabaseClient";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+// Carries the HTTP status and parsed body so callers can react to specific
+// responses (e.g. a 409 duplicate warning), not just show the message.
+export class ApiError extends Error {
+  readonly status: number;
+  readonly body: Record<string, unknown>;
+
+  constructor(message: string, status: number, body: Record<string, unknown>) {
+    super(message);
+    this.status = status;
+    this.body = body;
+  }
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
@@ -17,7 +30,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error ?? `Request failed: ${res.status}`);
+    throw new ApiError(body.error ?? `Request failed: ${res.status}`, res.status, body);
   }
   if (res.status === 204) return undefined as T;
   return res.json();

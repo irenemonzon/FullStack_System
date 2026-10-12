@@ -3,6 +3,9 @@ import type { CreateGuestInput, Guest, GuestSearchQuery, UpdateGuestInput } from
 import { apiClient } from "../apiClient";
 import type { VisitWithServices } from "./visits";
 
+// A possible existing record returned (409) when registering a guest.
+export type DuplicateGuest = Guest & { matchedOn: Array<"phone" | "name" | "birthDate" | "postcode"> };
+
 export type GuestMatch = Guest & { lastVisitAt: string | null; lastVisitId: string | null; score: number };
 
 function toQueryString(query: GuestSearchQuery): string {
@@ -25,7 +28,8 @@ export function useGuestSearch(query: GuestSearchQuery, enabled: boolean) {
 export function useCreateGuest() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: CreateGuestInput) => apiClient.post<Guest>("/api/guests", input),
+    mutationFn: ({ input, allowDuplicate = false }: { input: CreateGuestInput; allowDuplicate?: boolean }) =>
+      apiClient.post<Guest>(`/api/guests${allowDuplicate ? "?allowDuplicate=true" : ""}`, input),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["guests"] }),
   });
 }

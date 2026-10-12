@@ -7,8 +7,10 @@ import {
   guestSearchQuerySchema,
   guestSchema,
   guestHistoryQuerySchema,
+  createGuestQuerySchema,
+  type CreateGuestInput,
 } from "@support-hub/shared";
-import { withAuth, schema } from "../lib/db.js";
+import { withAuth, schema, type Tx } from "../lib/db.js";
 import { loadServicesByVisit } from "../lib/visitServices.js";
 import { registry } from "../lib/openapi.js";
 
@@ -106,20 +108,76 @@ registry.registerPath({
   responses: { 201: { description: "Created", content: { "application/json": { schema: guestSchema } } } },
 });
 
+// Comparison forms for duplicate detection: names ignore case and extra
+// spaces, phones compare digits only ("0412 345 678" = "0412345678"),
+// postcodes ignore case and surrounding spaces.
+const normalisedName = sql`lower(regexp_replace(trim(${guests.displayName}), '\\s+', ' ', 'g'))`;
+const normalisedPhone = sql`regexp_replace(coalesce(${guests.phone}, ''), '\\D', '', 'g')`;
+const normalisedPostcode = sql`upper(trim(coalesce(${guests.postcode}, '')))`;
+
+type MatchField = "phone" | "name" | "birthDate" | "postcode";
+
+// A possible duplicate is a guest with the same phone number, or the same
+// name plus the same birth date or postcode. Name alone isn't enough —
+// different people share common names.
+async function findPossibleDuplicates(tx: Tx, input: CreateGuestInput) {
+  const name = input.displayName.trim().replace(/\s+/g, " ").toLowerCase();
+  const phone = input.phone?.replace(/\D/g, "") ?? "";
+  const postcode = input.postcode?.trim().toUpperCase() ?? "";
+
+  const nameAnd: SQL[] = [];
+  if (input.birthDate) nameAnd.push(sql`${guests.birthDate} = ${input.birthDate}`);
+  if (postcode) nameAnd.push(sql`${normalisedPostcode} = ${postcode}`);
+
+  const conditions: SQL[] = [];
+  if (phone) conditions.push(sql`${normalisedPhone} = ${phone}`);
+  if (nameAnd.length) conditions.push(sql`(${normalisedName} = ${name} and (${sql.join(nameAnd, sql` or `)}))`);
+  if (conditions.length === 0) return [];
+
+  const rows = await tx
+    .select()
+    .from(guests)
+    .where(sql.join(conditions, sql` or `))
+    .orderBy(desc(guests.createdAt))
+    .limit(5);
+
+  return rows.map((row) => {
+    const matchedOn: MatchField[] = [];
+    if (phone && row.phone?.replace(/\D/g, "") === phone) matchedOn.push("phone");
+    if (row.displayName.trim().replace(/\s+/g, " ").toLowerCase() === name) matchedOn.push("name");
+    if (input.birthDate && row.birthDate === input.birthDate) matchedOn.push("birthDate");
+    if (postcode && row.postcode?.trim().toUpperCase() === postcode) matchedOn.push("postcode");
+    return { ...row, matchedOn };
+  });
+}
+
 router.post("/", async (req, res) => {
   const parsed = createGuestSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.issues[0]?.message ?? "Invalid body" });
+  const query = createGuestQuerySchema.safeParse(req.query);
+  if (!parsed.success || !query.success) {
+    const issue = (parsed.error ?? query.error)?.issues[0];
+    res.status(400).json({ error: issue?.message ?? "Invalid request" });
     return;
   }
+  const allowDuplicate = query.data.allowDuplicate === "true";
 
-  const [row] = await withAuth(req.auth!, (tx) =>
-    tx
+  const result = await withAuth(req.auth!, async (tx) => {
+    if (!allowDuplicate) {
+      const duplicates = await findPossibleDuplicates(tx, parsed.data);
+      if (duplicates.length) return { duplicates };
+    }
+    const [row] = await tx
       .insert(guests)
       .values({ ...parsed.data, createdBy: req.auth!.userId })
-      .returning(),
-  );
-  res.status(201).json(row);
+      .returning();
+    return { row };
+  });
+
+  if ("duplicates" in result) {
+    res.status(409).json({ error: "This guest may already be registered", duplicates: result.duplicates });
+    return;
+  }
+  res.status(201).json(result.row);
 });
 
 registry.registerPath({
