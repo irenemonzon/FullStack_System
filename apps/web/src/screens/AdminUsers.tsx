@@ -68,12 +68,12 @@ export default function AdminUsers() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-neutral-50">
       <AppHeader showNav />
 
       <div className="mx-auto w-full max-w-2xl px-6 py-8">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-slate-900">Users</h1>
+          <h1 className="text-2xl font-semibold text-neutral-900">Users</h1>
           <button type="button" onClick={() => setShowAddForm((v) => !v)} className={`${btn.secondary} ${size.sm}`}>
             {showAddForm ? "Cancel" : "Add user"}
           </button>
@@ -146,7 +146,7 @@ export default function AdminUsers() {
         )}
 
         {isFetching && (
-          <div className="mt-6 flex items-center gap-2 text-slate-400">
+          <div className="mt-6 flex items-center gap-2 text-neutral-400">
             <Spinner className="h-5 w-5" />
             <span className="text-sm">Loading…</span>
           </div>
@@ -156,21 +156,21 @@ export default function AdminUsers() {
           {users?.map((user) => {
             const isSelf = user.id === me?.id;
             return (
-              <li key={user.id} className="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4">
+              <li key={user.id} className="flex items-center justify-between gap-4 rounded-xl border border-neutral-200 bg-white p-4">
                 <div className="min-w-0">
-                  <p className="flex flex-wrap items-center gap-2 truncate font-medium text-slate-900">
+                  <p className="flex flex-wrap items-center gap-2 truncate font-medium text-neutral-900">
                     {user.fullName}
-                    {isSelf && <span className="text-xs font-normal text-slate-400">(you)</span>}
-                    {!user.active && <span className={`${pill} bg-slate-100 text-slate-500`}>Deactivated</span>}
+                    {isSelf && <span className="text-xs font-normal text-neutral-400">(you)</span>}
+                    {!user.active && <span className={`${pill} bg-neutral-100 text-neutral-500`}>Deactivated</span>}
                   </p>
-                  <p className="truncate text-sm text-slate-500">{user.email}</p>
+                  <p className="truncate text-sm text-neutral-500">{user.email}</p>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <select
                     value={user.role}
                     onChange={(e) => handleRoleChange(user, e.target.value as User["role"])}
                     disabled={updateUser.isPending}
-                    className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100"
+                    className="rounded-lg border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100"
                   >
                     {ROLES.map((r) => (
                       <option key={r.value} value={r.value}>

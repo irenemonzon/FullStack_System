@@ -21,7 +21,7 @@ export default function VisitSummary() {
 
   if (isLoading || !visit) {
     return (
-      <div className="flex min-h-screen items-center justify-center gap-2 text-slate-400">
+      <div className="flex min-h-screen items-center justify-center gap-2 text-neutral-400">
         <Spinner className="h-5 w-5" />
         <span className="text-sm">Loading visit…</span>
       </div>
@@ -29,12 +29,12 @@ export default function VisitSummary() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-28">
+    <main className="min-h-screen bg-neutral-50 pb-28">
       <AppHeader />
 
       <div className="mx-auto w-full max-w-2xl px-6 py-8">
-        <h1 className="text-2xl font-semibold text-slate-900">Visit summary for {guest?.displayName ?? "guest"}</h1>
-        <p className="mt-1 text-slate-600">Confirm everything given before finishing this visit.</p>
+        <h1 className="text-2xl font-semibold text-neutral-900">Visit summary for {guest?.displayName ?? "guest"}</h1>
+        <p className="mt-1 text-neutral-600">Confirm everything given before finishing this visit.</p>
 
         <VisitServicesBreakdown visit={visit} />
 
@@ -45,7 +45,7 @@ export default function VisitSummary() {
         )}
       </div>
 
-      <footer className="fixed inset-x-0 bottom-0 border-t border-slate-200 bg-white/90 px-6 py-4 backdrop-blur">
+      <footer className="fixed inset-x-0 bottom-0 border-t border-neutral-200 bg-white/90 px-6 py-4 backdrop-blur">
         <div className="mx-auto flex w-full max-w-2xl items-center justify-between">
           <button
             type="button"

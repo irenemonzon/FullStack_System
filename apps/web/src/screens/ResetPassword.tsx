@@ -38,9 +38,10 @@ export default function ResetPassword() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 via-slate-50 to-white px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-lg shadow-slate-200/50">
-        <h1 className="text-xl font-semibold text-slate-900">Set a new password</h1>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white px-4">
+      <div aria-hidden className="pointer-events-none absolute -right-48 -top-48 h-[28rem] w-[28rem] rounded-full bg-brand-500" />
+      <div className="relative w-full max-w-sm rounded-2xl border border-neutral-200 bg-white p-8 shadow-lg shadow-neutral-200/50">
+        <h1 className="text-xl font-semibold text-neutral-900">Set a new password</h1>
 
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
           <div>

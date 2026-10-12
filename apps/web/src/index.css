@@ -1,9 +1,23 @@
 @import "tailwindcss";
 
+/* 300 Blankets brand: black, white and orange (#EF7C01). */
+@theme {
+  --color-brand-50: #fff6ec;
+  --color-brand-100: #ffe9d1;
+  --color-brand-200: #ffd0a1;
+  --color-brand-300: #ffb066;
+  --color-brand-400: #f9952e;
+  --color-brand-500: #ef7c01;
+  --color-brand-600: #d46c00;
+  --color-brand-700: #ad5600;
+  --color-brand-800: #8a4500;
+  --color-brand-900: #6b3600;
+}
+
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-neutral-50 text-neutral-900 antialiased;
 }
 
 ::selection {
-  @apply bg-indigo-100 text-indigo-900;
+  @apply bg-brand-100 text-brand-900;
 }
