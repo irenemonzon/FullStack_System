@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useVisit, useFinishVisit } from "../lib/queries/visits";
 import { useGuest } from "../lib/queries/guests";
 import AppHeader from "../components/AppHeader";
 import VisitServicesBreakdown from "../components/VisitServicesBreakdown";
+import VisitFinishedModal from "../components/VisitFinishedModal";
 import { ArrowLeftIcon, CheckCircleIcon, Spinner } from "../components/icons";
 import { btn, size } from "../lib/ui";
 
@@ -13,10 +15,11 @@ export default function VisitSummary() {
   const { data: visit, isLoading } = useVisit(visitId);
   const { data: guest } = useGuest(visit?.guestId);
   const finishVisit = useFinishVisit(visitId!);
+  const [finished, setFinished] = useState(false);
 
   async function handleConfirm() {
     await finishVisit.mutateAsync({ status: "finished" });
-    navigate("/", { replace: true });
+    setFinished(true);
   }
 
   if (isLoading || !visit) {
@@ -57,7 +60,7 @@ export default function VisitSummary() {
           <button
             type="button"
             onClick={handleConfirm}
-            disabled={finishVisit.isPending}
+            disabled={finishVisit.isPending || finished}
             className={`${btn.primary} ${size.md} inline-flex items-center gap-2`}
           >
             <CheckCircleIcon className="h-4 w-4" />
@@ -65,6 +68,14 @@ export default function VisitSummary() {
           </button>
         </div>
       </footer>
+
+      {finished && (
+        <VisitFinishedModal
+          guestName={guest?.displayName}
+          onDone={() => navigate("/", { replace: true })}
+          onViewProfile={() => navigate(`/guests/${visit.guestId}`, { replace: true })}
+        />
+      )}
     </main>
   );
 }
