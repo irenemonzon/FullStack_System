@@ -1,6 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CreateGuestInput, Guest, GuestSearchQuery, UpdateGuestInput } from "@support-hub/shared";
 import { apiClient } from "../apiClient";
+import type { VisitWithServices } from "./visits";
 
 export type GuestMatch = Guest & { lastVisitAt: string | null; lastVisitId: string | null; score: number };
 
@@ -49,6 +50,31 @@ export function useGuestVisits(id: string | undefined) {
   return useQuery({
     queryKey: ["guests", id, "visits"],
     queryFn: () => apiClient.get(`/api/guests/${id}/visits`),
+    enabled: !!id,
+  });
+}
+
+export type GuestHistoryTotals = {
+  visits: number;
+  firstVisitAt: string | null;
+  kitchen: number;
+  materialAid: number;
+  information: number;
+};
+
+type GuestHistoryPage = { totals: GuestHistoryTotals; visits: VisitWithServices[]; hasMore: boolean };
+
+const HISTORY_PAGE_SIZE = 5;
+
+// Paged visit history for the guest profile: each page carries the same
+// lifetime totals, so callers can read them off whichever page is first.
+export function useGuestHistory(id: string | undefined) {
+  return useInfiniteQuery({
+    queryKey: ["guests", id, "history"],
+    queryFn: ({ pageParam }) =>
+      apiClient.get<GuestHistoryPage>(`/api/guests/${id}/history?limit=${HISTORY_PAGE_SIZE}&offset=${pageParam}`),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, pages) => (lastPage.hasMore ? pages.length * HISTORY_PAGE_SIZE : undefined),
     enabled: !!id,
   });
 }

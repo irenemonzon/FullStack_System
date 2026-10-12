@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { eq, and, gte, lt, inArray } from "drizzle-orm";
+import { eq, and, gte, lt } from "drizzle-orm";
 import { z } from "zod";
 import { createVisitSchema, updateVisitSchema, visitQuerySchema, visitSchema } from "@support-hub/shared";
 import { withAuth, schema } from "../lib/db.js";
+import { loadServicesByVisit } from "../lib/visitServices.js";
 import { registry } from "../lib/openapi.js";
 
-const { visits, services, serviceSupports } = schema;
+const { visits } = schema;
 const router = Router();
 
 registry.registerPath({
@@ -48,21 +49,8 @@ router.get("/:id", async (req, res) => {
   const result = await withAuth(req.auth!, async (tx) => {
     const [visit] = await tx.select().from(visits).where(eq(visits.id, req.params.id));
     if (!visit) return null;
-    const visitServices = await tx.select().from(services).where(eq(services.visitId, req.params.id));
-
-    // Information rows need their linked supports for the recap screens —
-    // service_supports isn't otherwise reachable from a plain services read.
-    const informationServiceIds = visitServices.filter((s) => s.station === "information").map((s) => s.id);
-    const supportLinks = informationServiceIds.length
-      ? await tx.select().from(serviceSupports).where(inArray(serviceSupports.serviceId, informationServiceIds))
-      : [];
-
-    const servicesWithSupports = visitServices.map((service) => ({
-      ...service,
-      supportCategoryIds: supportLinks.filter((l) => l.serviceId === service.id).map((l) => l.supportCategoryId),
-    }));
-
-    return { ...visit, services: servicesWithSupports };
+    const servicesByVisit = await loadServicesByVisit(tx, [visit.id]);
+    return { ...visit, services: servicesByVisit.get(visit.id) ?? [] };
   });
   if (!result) {
     res.status(404).json({ error: "Not found" });

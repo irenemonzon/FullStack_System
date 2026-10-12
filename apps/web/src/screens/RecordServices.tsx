@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import type { Service } from "@support-hub/shared";
 import { useVisit } from "../lib/queries/visits";
 import { useGuest } from "../lib/queries/guests";
@@ -85,7 +85,20 @@ export default function RecordServices() {
       <AppHeader />
 
       <div className="mx-auto w-full max-w-2xl px-6 py-8">
-        <h1 className="text-2xl font-semibold text-neutral-900">Recording visit for {guest?.displayName ?? "guest"}</h1>
+        <h1 className="text-2xl font-semibold text-neutral-900">
+          Recording visit for{" "}
+          {guest ? (
+            <Link
+              to={`/guests/${guest.id}`}
+              className="underline decoration-brand-500 decoration-2 underline-offset-4 hover:text-brand-700"
+            >
+              {guest.displayName}
+            </Link>
+          ) : (
+            "guest"
+          )}
+        </h1>
+        <p className="mt-1 text-sm text-neutral-500">Tap their name to see the help they've had before.</p>
 
         <section className={`${card} mt-6 p-5`}>
           <div className="flex items-center justify-between">

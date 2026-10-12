@@ -6,6 +6,7 @@ import CheckIn from "./screens/CheckIn";
 import FindGuest from "./screens/FindGuest";
 import RegisterGuest from "./screens/RegisterGuest";
 import GuestList from "./screens/GuestList";
+import GuestProfile from "./screens/GuestProfile";
 import RecordServices from "./screens/RecordServices";
 import VisitSummary from "./screens/VisitSummary";
 import AdminUsers from "./screens/AdminUsers";
@@ -42,6 +43,14 @@ function App() {
             element={
               <RequireAuth>
                 <RegisterGuest />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/guests/:guestId"
+            element={
+              <RequireAuth>
+                <GuestProfile />
               </RequireAuth>
             }
           />

@@ -173,7 +173,7 @@ export default function FindGuest() {
                         )}
                         <button
                           type="button"
-                          onClick={() => navigate("/", { state: { guest } })}
+                          onClick={() => navigate(`/guests/${guest.id}`)}
                           className={`${btn.secondary} ${size.sm}`}
                         >
                           Select
