@@ -98,7 +98,6 @@ export default function RecordServices() {
             "guest"
           )}
         </h1>
-        <p className="mt-1 text-sm text-neutral-500">Tap their name to see the help they've had before.</p>
 
         <section className={`${card} mt-6 p-5`}>
           <div className="flex items-center justify-between">
