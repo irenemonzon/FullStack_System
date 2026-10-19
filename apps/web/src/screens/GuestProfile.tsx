@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import type { Guest } from "@support-hub/shared";
 import { useGuest, useGuestHistory } from "../lib/queries/guests";
 import { useCreateVisit, type VisitWithServices } from "../lib/queries/visits";
 import { useInventory, useSupportCategories, type CatalogueStation } from "../lib/queries/inventory";
 import AppHeader from "../components/AppHeader";
 import VisitServicesBreakdown from "../components/VisitServicesBreakdown";
+import SharedPhoneWarning from "../components/SharedPhoneWarning";
 import { formatBirthDate } from "../lib/date";
 import { ArrowLeftIcon, ChevronDownIcon, InboxIcon, Spinner } from "../components/icons";
 import { btn, card, pill, size } from "../lib/ui";
@@ -28,6 +29,9 @@ function isToday(iso: string): boolean {
 export default function GuestProfile() {
   const { guestId } = useParams<{ guestId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  // Set by Edit guest when the saved phone number is shared with others.
+  const phoneSharedWith = (location.state as { phoneSharedWith?: Guest[] } | null)?.phoneSharedWith ?? [];
   const { data: guest, isLoading: guestLoading, isError: guestError } = useGuest(guestId);
   const history = useGuestHistory(guestId);
   const createVisit = useCreateVisit();
@@ -124,6 +128,14 @@ export default function GuestProfile() {
           <div className="min-w-0">
             <h1 className="text-2xl font-semibold text-neutral-900">{guest.displayName}</h1>
             <p className="mt-1 text-sm text-neutral-600">{details.join(" · ")}</p>
+            <button
+              type="button"
+              // Replaces the profile's history entry; Edit guest replaces it back.
+              onClick={() => navigate(`/guests/${guest.id}/edit`, { replace: true })}
+              className={`mt-2 text-sm ${btn.ghost}`}
+            >
+              Edit details
+            </button>
           </div>
           {currentVisit ? (
             <button
@@ -148,6 +160,15 @@ export default function GuestProfile() {
           <p role="alert" className="mt-3 text-sm text-red-600">
             {(createVisit.error as Error).message}
           </p>
+        )}
+
+        {phoneSharedWith.length > 0 && (
+          <SharedPhoneWarning
+            guests={phoneSharedWith}
+            onOpen={(id) => navigate(`/guests/${id}`)}
+            // Clearing the history state keeps it closed on refresh or Back.
+            onClose={() => navigate(location.pathname, { replace: true, state: null })}
+          />
         )}
 
         {(guest.dietary || guest.notes) && (

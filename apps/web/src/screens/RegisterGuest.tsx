@@ -4,58 +4,40 @@ import { createGuestSchema, type CreateGuestInput } from "@support-hub/shared";
 import { useCreateGuest, type DuplicateGuest } from "../lib/queries/guests";
 import { ApiError } from "../lib/apiClient";
 import DuplicateGuestWarning from "../components/DuplicateGuestWarning";
-import { BIRTH_DATE_ERROR, parseBirthDate } from "../lib/date";
-import BirthDateInput from "../components/BirthDateInput";
+import GuestFormFields, { emptyGuestForm, readGuestForm, type GuestFormValues } from "../components/GuestFormFields";
 import { ArrowLeftIcon } from "../components/icons";
-import { btn, input, label, size } from "../lib/ui";
+import { btn, size } from "../lib/ui";
 
-const GENDERS: Array<{ value: CreateGuestInput["gender"]; label: string }> = [
-  { value: "woman", label: "Woman" },
-  { value: "man", label: "Man" },
-  { value: "non_binary", label: "Non-binary" },
-  { value: "prefer_not_to_say", label: "Prefer not to say" },
-];
+// The fields the API's duplicate check compares on.
+const DUPLICATE_CHECK_FIELDS: Array<keyof GuestFormValues> = ["displayName", "birthDateInput", "postcode", "phone"];
 
 export default function RegisterGuest() {
   const navigate = useNavigate();
   const createGuest = useCreateGuest();
 
-  const [displayName, setDisplayName] = useState("");
-  const [gender, setGender] = useState<CreateGuestInput["gender"] | null>(null);
-  const [birthDateInput, setBirthDateInput] = useState("");
-  const [postcode, setPostcode] = useState("");
-  const [phone, setPhone] = useState("");
-  const [preferredLanguage, setPreferredLanguage] = useState("");
-  const [dietary, setDietary] = useState("");
-  const [notes, setNotes] = useState("");
+  const [values, setValues] = useState<GuestFormValues>(emptyGuestForm);
   const [error, setError] = useState<string | null>(null);
   const [duplicates, setDuplicates] = useState<DuplicateGuest[] | null>(null);
+
+  function handleChange(changes: Partial<GuestFormValues>) {
+    setValues((current) => ({ ...current, ...changes }));
+    // Editing a field the duplicate check compares on drops the warning and
+    // brings back "Save guest", so the corrected details get checked again
+    // instead of only being savable via "register anyway".
+    if (DUPLICATE_CHECK_FIELDS.some((field) => field in changes)) setDuplicates(null);
+  }
 
   // Validates the form as it currently stands; sets the error and returns
   // null if something needs fixing.
   function buildPayload(): CreateGuestInput | null {
-    if (!gender) {
-      setError("Please select a gender.");
+    const form = readGuestForm(values);
+    if ("error" in form) {
+      setError(form.error);
       return null;
     }
 
-    const birthDate = birthDateInput ? parseBirthDate(birthDateInput) : undefined;
-    if (birthDateInput && !birthDate) {
-      setError(BIRTH_DATE_ERROR);
-      return null;
-    }
-
-    const payload: CreateGuestInput = {
-      displayName,
-      gender,
-      ...(birthDate ? { birthDate } : {}),
-      ...(postcode ? { postcode } : {}),
-      ...(phone ? { phone } : {}),
-      ...(preferredLanguage ? { preferredLanguage } : {}),
-      ...(dietary ? { dietary } : {}),
-      ...(notes ? { notes } : {}),
-    };
-
+    // New guests simply leave out the optional fields that weren't filled in.
+    const payload = Object.fromEntries(Object.entries(form.data).filter(([, value]) => value !== null));
     const parsed = createGuestSchema.safeParse(payload);
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Please check your details");
@@ -101,102 +83,7 @@ export default function RegisterGuest() {
         <h1 className="mt-4 text-2xl font-semibold text-neutral-900">Register guest</h1>
 
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-6">
-          <div>
-            <label htmlFor="displayName" className={label}>
-              Name
-            </label>
-            <input
-              id="displayName"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="What should we call them?"
-              required
-              className={input}
-            />
-          </div>
-
-          <fieldset>
-            <legend className={label}>Gender (required)</legend>
-            <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {GENDERS.map((g) => (
-                <label key={g.value} className="cursor-pointer">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value={g.value}
-                    checked={gender === g.value}
-                    onChange={() => setGender(g.value)}
-                    className="peer sr-only"
-                  />
-                  <span className="block rounded-xl border-2 border-neutral-200 px-3 py-3 text-center text-sm font-medium text-neutral-700 transition peer-checked:border-brand-500 peer-checked:bg-brand-50 peer-checked:text-brand-700 hover:border-neutral-300">
-                    {g.label}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label htmlFor="birthDate" className={label}>
-                Birth date
-              </label>
-              <BirthDateInput id="birthDate" value={birthDateInput} onChange={setBirthDateInput} />
-            </div>
-
-            <div>
-              <label htmlFor="postcode" className={label}>
-                Postcode
-              </label>
-              <input
-                id="postcode"
-                value={postcode}
-                onChange={(e) => setPostcode(e.target.value)}
-                placeholder="e.g. 3021"
-                className={input}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="phone" className={label}>
-                Phone
-              </label>
-              <input
-                id="phone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="e.g. 0412 345 678"
-                className={input}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="preferredLanguage" className={label}>
-                Language
-              </label>
-              <input
-                id="preferredLanguage"
-                value={preferredLanguage}
-                onChange={(e) => setPreferredLanguage(e.target.value)}
-                placeholder="e.g. English"
-                className={input}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="dietary" className={label}>
-                Dietary
-              </label>
-              <input id="dietary" value={dietary} onChange={(e) => setDietary(e.target.value)} className={input} />
-            </div>
-
-            <div className="sm:col-span-2">
-              <label htmlFor="notes" className={label}>
-                Notes
-              </label>
-              <textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className={input} />
-            </div>
-          </div>
+          <GuestFormFields values={values} onChange={handleChange} />
 
           {error && (
             <p role="alert" className="text-sm text-red-600">

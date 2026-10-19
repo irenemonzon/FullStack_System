@@ -11,6 +11,14 @@ Support Hub — a volunteer-facing web app for the charity 300 Blankets, used to
 
 Stage 1 (this build) is registration + logging what's given out. Stage 2 (donations, donors, full stock-movement tracking) is explicitly out of scope — don't build toward it preemptively.
 
+## Spec-driven workflow
+
+New features follow the workflow in `specs/README.md`:
+- Before writing any implementation code for a new feature or behaviour change, create `specs/NNN-name/spec.md` from `specs/_template/` and get the user to approve it. While a spec is still `Status: draft` or has open questions, only work on the spec itself.
+- Change the contract (Zod schemas in `packages/shared`, `db/schema.ts`/migrations) before writing route or screen code, and turn API-level acceptance criteria into tests in `apps/api/src/__tests__/`.
+- If behaviour changes during or after implementation, update the spec in the same branch. Before merging, make sure the spec matches what was built and set `Status: built`.
+- Small fixes that restore behaviour already specified (bugs, copy, styling) don't need a spec.
+
 ## Commands
 
 Install once at the repo root (pnpm workspace):

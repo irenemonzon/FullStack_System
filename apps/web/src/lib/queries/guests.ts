@@ -1,10 +1,15 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { CreateGuestInput, Guest, GuestSearchQuery, UpdateGuestInput } from "@support-hub/shared";
+import type {
+  CreateGuestInput,
+  Guest,
+  GuestSearchQuery,
+  UpdateGuestInput,
+  UpdateGuestResponse,
+} from "@support-hub/shared";
 import { apiClient } from "../apiClient";
 import type { VisitWithServices } from "./visits";
 
-// A possible existing record returned (409) when registering a guest.
-export type DuplicateGuest = Guest & { matchedOn: Array<"phone" | "name" | "birthDate" | "postcode"> };
+export type { DuplicateGuest } from "@support-hub/shared";
 
 export type GuestMatch = Guest & { lastVisitAt: string | null; lastVisitId: string | null; score: number };
 
@@ -45,8 +50,9 @@ export function useGuest(id: string | undefined) {
 export function useUpdateGuest(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: UpdateGuestInput) => apiClient.patch<Guest>(`/api/guests/${id}`, input),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["guests", id] }),
+    mutationFn: (input: UpdateGuestInput) => apiClient.patch<UpdateGuestResponse>(`/api/guests/${id}`, input),
+    // Name/phone/etc. also show in search results and the All guests list.
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["guests"] }),
   });
 }
 
