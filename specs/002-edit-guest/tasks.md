@@ -12,14 +12,14 @@
 
 ## Manual checks
 
-- [ ] "Edit details" on the profile opens the form, filled in with the current values (including birth date as DD/MM/YYYY)
-- [ ] Changing the phone to one used by another guest saves, returns to the profile, and shows the warning with that guest and "Open profile"
-- [ ] × closes the warning; refreshing the page doesn't bring it back
-- [ ] Clearing the postcode and saving removes it from the profile
-- [ ] Cancel leaves the guest unchanged
-- [ ] Register guest still works, including the duplicate warning and the "edit a field → Save guest comes back" fix from 001
-- [ ] All of the above on an iPad-sized viewport
+- [x] "Edit details" on the profile opens the form, filled in with the current values (including birth date as DD/MM/YYYY)
+- [x] Changing the phone to one used by another guest saves, returns to the profile, and shows the warning with that guest and "Open profile"
+- [x] × closes the warning; refreshing the page doesn't bring it back
+- [x] Clearing the postcode and saving removes it from the profile
+- [x] Cancel leaves the guest unchanged
+- [x] Register guest still works, including the duplicate warning and the "edit a field → Save guest comes back" fix from 001
+- [ ] All of the above on an iPad-sized viewport. Not done: the 2026-10-19 browser run was at desktop width only, because the Chrome window couldn't be resized; the user chose to mark the spec built without it
 
 ## Before merging
 
-- [ ] `spec.md` matches what was built; `Status: built`
+- [x] `spec.md` matches what was built; `Status: built`

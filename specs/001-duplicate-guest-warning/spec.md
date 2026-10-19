@@ -33,8 +33,8 @@ UI (manual):
 - [x] On a 409, Register guest shows the warning with each match and the fields it matched on.
 - [x] "Open existing profile" goes to `/guests/:id` for that guest; no new guest is created.
 - [x] "Not the same person — register anyway" creates the guest and goes to their profile.
-- [ ] With the warning showing, changing the phone (or name, birth date or postcode) hides the warning and shows "Save guest". Saving checks the new details again.
-- [ ] `/api/docs` lists the `allowDuplicate` query parameter and the 409 response for `POST /api/guests`.
+- [x] With the warning showing, changing the phone (or name, birth date or postcode) hides the warning and shows "Save guest". Saving checks the new details again.
+- [x] `/api/docs` lists the `allowDuplicate` query parameter and the 409 response for `POST /api/guests`.
 
 ## Contract changes
 

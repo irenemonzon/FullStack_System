@@ -1,6 +1,6 @@
 # 002 — Edit guest details
 
-Status: approved
+Status: built
 Branch: `edit-guest`
 
 ## Why
