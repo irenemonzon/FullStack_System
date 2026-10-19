@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { createGuestSchema, type CreateGuestInput } from "@support-hub/shared";
 import { useCreateGuest, type DuplicateGuest } from "../lib/queries/guests";
@@ -30,6 +30,13 @@ export default function RegisterGuest() {
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [duplicates, setDuplicates] = useState<DuplicateGuest[] | null>(null);
+
+  // Editing a field the duplicate check compares on drops the warning and
+  // brings back "Save guest", so the corrected details get checked again
+  // instead of only being savable via "register anyway".
+  useEffect(() => {
+    setDuplicates(null);
+  }, [displayName, birthDateInput, postcode, phone]);
 
   // Validates the form as it currently stands; sets the error and returns
   // null if something needs fixing.

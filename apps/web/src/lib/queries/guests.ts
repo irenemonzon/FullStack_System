@@ -3,8 +3,7 @@ import type { CreateGuestInput, Guest, GuestSearchQuery, UpdateGuestInput } from
 import { apiClient } from "../apiClient";
 import type { VisitWithServices } from "./visits";
 
-// A possible existing record returned (409) when registering a guest.
-export type DuplicateGuest = Guest & { matchedOn: Array<"phone" | "name" | "birthDate" | "postcode"> };
+export type { DuplicateGuest } from "@support-hub/shared";
 
 export type GuestMatch = Guest & { lastVisitAt: string | null; lastVisitId: string | null; score: number };
 

@@ -40,3 +40,15 @@ export const guestSchema = createGuestSchema.extend({
   updatedAt: z.string(),
 });
 export type Guest = z.infer<typeof guestSchema>;
+
+// A possible existing record returned (409) when registering a guest, with
+// the fields it matched the new guest on.
+export const duplicateGuestSchema = guestSchema.extend({
+  matchedOn: z.array(z.enum(["phone", "name", "birthDate", "postcode"])),
+});
+export type DuplicateGuest = z.infer<typeof duplicateGuestSchema>;
+
+export const duplicateGuestsResponseSchema = z.object({
+  error: z.string(),
+  duplicates: z.array(duplicateGuestSchema),
+});

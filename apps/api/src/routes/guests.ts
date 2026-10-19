@@ -8,6 +8,7 @@ import {
   guestSchema,
   guestHistoryQuerySchema,
   createGuestQuerySchema,
+  duplicateGuestsResponseSchema,
   type CreateGuestInput,
 } from "@support-hub/shared";
 import { withAuth, schema, type Tx } from "../lib/db.js";
@@ -101,11 +102,22 @@ router.get("/", async (req, res) => {
 registry.registerPath({
   method: "post",
   path: "/guests",
-  description: "Register a guest (gender required, nothing else is)",
+  description:
+    "Register a guest (gender required, nothing else is). Rejected with 409 if an existing guest has the same phone number, or the same name plus the same birth date or postcode — pass allowDuplicate=true once the volunteer has confirmed it's a different person.",
   tags: ["Guests"],
   security: [{ bearerAuth: [] }],
-  request: { body: { content: { "application/json": { schema: createGuestSchema } } } },
-  responses: { 201: { description: "Created", content: { "application/json": { schema: guestSchema } } } },
+  request: {
+    query: createGuestQuerySchema,
+    body: { content: { "application/json": { schema: createGuestSchema } } },
+  },
+  responses: {
+    201: { description: "Created", content: { "application/json": { schema: guestSchema } } },
+    400: { description: "Invalid body or query" },
+    409: {
+      description: "Possible duplicates found (up to 5, newest first); the guest was not created",
+      content: { "application/json": { schema: duplicateGuestsResponseSchema } },
+    },
+  },
 });
 
 // Comparison forms for duplicate detection: names ignore case and extra
