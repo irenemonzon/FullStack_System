@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { eq, desc, sql, type SQL } from "drizzle-orm";
+import { and, eq, ne, desc, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import {
   createGuestSchema,
@@ -9,6 +9,7 @@ import {
   guestHistoryQuerySchema,
   createGuestQuerySchema,
   duplicateGuestsResponseSchema,
+  updateGuestResponseSchema,
   type CreateGuestInput,
 } from "@support-hub/shared";
 import { withAuth, schema, type Tx } from "../lib/db.js";
@@ -217,7 +218,8 @@ router.get("/:id", async (req, res) => {
 registry.registerPath({
   method: "patch",
   path: "/guests/{id}",
-  description: "Edit a guest's profile",
+  description:
+    "Edit a guest's profile; send null to clear an optional field. Always saves — if the phone number was changed to one other guests also have, they're listed in phoneSharedWith so the volunteer can be told.",
   tags: ["Guests"],
   security: [{ bearerAuth: [] }],
   request: {
@@ -225,7 +227,8 @@ registry.registerPath({
     body: { content: { "application/json": { schema: updateGuestSchema } } },
   },
   responses: {
-    200: { description: "Updated", content: { "application/json": { schema: guestSchema } } },
+    200: { description: "Updated", content: { "application/json": { schema: updateGuestResponseSchema } } },
+    400: { description: "Invalid body" },
     404: { description: "Not found" },
   },
 });
@@ -237,18 +240,35 @@ router.patch("/:id", async (req, res) => {
     return;
   }
 
-  const [row] = await withAuth(req.auth!, (tx) =>
-    tx
+  const result = await withAuth(req.auth!, async (tx) => {
+    const [before] = await tx.select({ phone: guests.phone }).from(guests).where(eq(guests.id, req.params.id));
+    if (!before) return null;
+
+    const [row] = await tx
       .update(guests)
       .set({ ...parsed.data, updatedAt: new Date() })
       .where(eq(guests.id, req.params.id))
-      .returning(),
-  );
-  if (!row) {
+      .returning();
+
+    // Only a changed phone is reported, so editing e.g. notes doesn't keep
+    // warning about a number that was already shared.
+    const phone = row.phone?.replace(/\D/g, "") ?? "";
+    const phoneChanged = phone !== "" && phone !== (before.phone?.replace(/\D/g, "") ?? "");
+    const phoneSharedWith = phoneChanged
+      ? await tx
+          .select()
+          .from(guests)
+          .where(and(sql`${normalisedPhone} = ${phone}`, ne(guests.id, row.id)))
+          .orderBy(desc(guests.createdAt))
+          .limit(5)
+      : [];
+    return { ...row, phoneSharedWith };
+  });
+  if (!result) {
     res.status(404).json({ error: "Not found" });
     return;
   }
-  res.json(row);
+  res.json(result);
 });
 
 registry.registerPath({

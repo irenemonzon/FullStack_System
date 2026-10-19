@@ -47,11 +47,11 @@ UI (manual):
 
 - Merging duplicate records that already exist.
 - Fuzzy or phonetic name matching (e.g. "Jon" vs "John").
-- Blocking an edit that creates a duplicate. Edits only warn: see Open questions.
+- Edits: they never block, and only a changed phone number is checked. See [002](../002-edit-guest/spec.md).
 
 ## Open questions
 
-1. **Edits.** Decided: when an edit gives a guest a phone number that already belongs to another guest, the volunteer is told, but the save is still allowed, and the warning can be closed with an ×. However, the web app has no screen for editing a guest yet (`PATCH /api/guests/:id` exists, but nothing in the UI calls it). Is this part of a new "edit guest" feature (its own spec), or should only the API side be built for now?
+None. Duplicate warnings on edit are specified in [002 — Edit guest details](../002-edit-guest/spec.md).
 
 ## Decisions
 

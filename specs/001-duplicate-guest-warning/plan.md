@@ -21,7 +21,7 @@
 - `apps/web/src/screens/RegisterGuest.tsx`: `save(allowDuplicate)`, which shows the warning on a 409
 
 **Follow-up fixes (2026-10-19)**
-- `RegisterGuest.tsx`: an effect clears `duplicates` when name, birth date, postcode or phone change
+- `RegisterGuest.tsx`: changing name, birth date, postcode or phone clears `duplicates` (in the form change handler since 002)
 - `guest.ts` (shared): `duplicateGuestSchema` / `duplicateGuestsResponseSchema`, used by the 409 entry in the `POST /guests` OpenAPI registration and by the web `DuplicateGuest` type
 
 **Tests**

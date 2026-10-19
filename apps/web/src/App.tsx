@@ -7,6 +7,7 @@ import FindGuest from "./screens/FindGuest";
 import RegisterGuest from "./screens/RegisterGuest";
 import GuestList from "./screens/GuestList";
 import GuestProfile from "./screens/GuestProfile";
+import EditGuest from "./screens/EditGuest";
 import RecordServices from "./screens/RecordServices";
 import VisitSummary from "./screens/VisitSummary";
 import AdminUsers from "./screens/AdminUsers";
@@ -51,6 +52,14 @@ function App() {
             element={
               <RequireAuth>
                 <GuestProfile />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/guests/:guestId/edit"
+            element={
+              <RequireAuth>
+                <EditGuest />
               </RequireAuth>
             }
           />
