@@ -20,4 +20,4 @@
 
 ## Before merging
 
-- [ ] `spec.md` matches what was built; `Status: built`
+- [x] `spec.md` matches what was built; `Status: built`

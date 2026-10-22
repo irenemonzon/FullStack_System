@@ -1,6 +1,6 @@
 # 003 — Required postcode, and * for required fields
 
-Status: approved
+Status: built
 Branch: `required-postcode`
 
 ## Why
