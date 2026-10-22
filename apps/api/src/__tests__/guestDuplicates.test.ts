@@ -34,7 +34,7 @@ describe("guest registration duplicate check", () => {
 
   it("flags the same phone number, ignoring spaces", async () => {
     const spaced = `${phone.slice(0, 4)} ${phone.slice(4, 7)} ${phone.slice(7)}`;
-    const res = await register({ displayName: `Someone Else ${suffix}`, phone: spaced });
+    const res = await register({ displayName: `Someone Else ${suffix}`, postcode: "3000", phone: spaced });
     expect(res.status).toBe(409);
     expect(res.body.duplicates).toHaveLength(1);
     expect(res.body.duplicates[0].id).toBe(createdIds[0]);
@@ -42,7 +42,7 @@ describe("guest registration duplicate check", () => {
   });
 
   it("flags the same name (case/spacing-insensitive) plus birth date", async () => {
-    const res = await register({ displayName: `  dup  test ${suffix.toUpperCase()} `, birthDate: "1985-09-05" });
+    const res = await register({ displayName: `  dup  test ${suffix.toUpperCase()} `, birthDate: "1985-09-05", postcode: "3000" });
     expect(res.status).toBe(409);
     expect(res.body.duplicates[0].matchedOn).toEqual(["name", "birthDate"]);
   });
@@ -60,7 +60,7 @@ describe("guest registration duplicate check", () => {
   });
 
   it("registers anyway when allowDuplicate=true", async () => {
-    const res = await register({ displayName: name, phone }, true);
+    const res = await register({ displayName: name, postcode: "3021", phone }, true);
     expect(res.status).toBe(201);
     createdIds.push(res.body.id);
   });

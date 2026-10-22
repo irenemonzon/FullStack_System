@@ -104,7 +104,7 @@ registry.registerPath({
   method: "post",
   path: "/guests",
   description:
-    "Register a guest (gender required, nothing else is). Rejected with 409 if an existing guest has the same phone number, or the same name plus the same birth date or postcode — pass allowDuplicate=true once the volunteer has confirmed it's a different person.",
+    "Register a guest (name, gender and postcode required; nothing else is). Rejected with 409 if an existing guest has the same phone number, or the same name plus the same birth date or postcode — pass allowDuplicate=true once the volunteer has confirmed it's a different person.",
   tags: ["Guests"],
   security: [{ bearerAuth: [] }],
   request: {
@@ -219,7 +219,7 @@ registry.registerPath({
   method: "patch",
   path: "/guests/{id}",
   description:
-    "Edit a guest's profile; send null to clear an optional field. Always saves — if the phone number was changed to one other guests also have, they're listed in phoneSharedWith so the volunteer can be told.",
+    "Edit a guest's profile; send null to clear an optional field (name, gender and postcode can't be cleared). Always saves — if the phone number was changed to one other guests also have, they're listed in phoneSharedWith so the volunteer can be told.",
   tags: ["Guests"],
   security: [{ bearerAuth: [] }],
   request: {

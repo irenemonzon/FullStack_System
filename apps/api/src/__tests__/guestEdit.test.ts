@@ -29,7 +29,7 @@ describe("guest editing", () => {
 
   beforeAll(async () => {
     token = await signIn(TEST_VOLUNTEER.email, TEST_VOLUNTEER.password);
-    guestA = await register({ displayName: `Edit Test A ${suffix}`, phone });
+    guestA = await register({ displayName: `Edit Test A ${suffix}`, postcode: "3021", phone });
     guestB = await register({ displayName: `Edit Test B ${suffix}`, postcode: "3021" });
   });
 
@@ -59,10 +59,9 @@ describe("guest editing", () => {
   });
 
   it("clears an optional field sent as null", async () => {
-    const res = await edit(guestB, { phone: null, postcode: null });
+    const res = await edit(guestB, { phone: null });
     expect(res.status).toBe(200);
     expect(res.body.phone).toBeNull();
-    expect(res.body.postcode).toBeNull();
   });
 
   it("rejects an empty name or invalid birth date and changes nothing", async () => {
