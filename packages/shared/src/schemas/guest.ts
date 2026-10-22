@@ -3,11 +3,11 @@ import { z } from "zod";
 export const genderEnum = z.enum(["woman", "man", "non_binary", "prefer_not_to_say"]);
 
 export const createGuestSchema = z.object({
-  displayName: z.string().min(1, "Name is required"),
+  displayName: z.string({ required_error: "Name is required" }).trim().min(1, "Name is required"),
   gender: genderEnum,
   // Sent as ISO YYYY-MM-DD; the web app converts from the DD/MM/YYYY it shows.
   birthDate: z.string().date("Birth date must be a valid date").optional(),
-  postcode: z.string().min(1).optional(),
+  postcode: z.string({ required_error: "Postcode is required" }).trim().min(1, "Postcode is required"),
   phone: z.string().min(1).optional(),
   preferredLanguage: z.string().min(1).optional(),
   dietary: z.string().min(1).optional(),
@@ -22,10 +22,10 @@ export const createGuestQuerySchema = z.object({
 });
 
 // Edits can send null for an optional field to clear it (e.g. a phone
-// number that no longer works); name and gender can be changed but not removed.
+// number that no longer works); name, gender and postcode can be changed but
+// not removed.
 export const updateGuestSchema = createGuestSchema.partial().extend({
   birthDate: createGuestSchema.shape.birthDate.unwrap().nullable().optional(),
-  postcode: createGuestSchema.shape.postcode.unwrap().nullable().optional(),
   phone: createGuestSchema.shape.phone.unwrap().nullable().optional(),
   preferredLanguage: createGuestSchema.shape.preferredLanguage.unwrap().nullable().optional(),
   dietary: createGuestSchema.shape.dietary.unwrap().nullable().optional(),
@@ -44,6 +44,8 @@ export const guestSearchQuerySchema = z.object({
 export type GuestSearchQuery = z.infer<typeof guestSearchQuerySchema>;
 
 export const guestSchema = createGuestSchema.extend({
+  // Required on input, but the column itself is still nullable (specs/003).
+  postcode: z.string().nullable(),
   id: z.string().uuid(),
   createdAt: z.string(),
   updatedAt: z.string(),

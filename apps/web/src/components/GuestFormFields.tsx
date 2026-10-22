@@ -1,7 +1,7 @@
 import type { CreateGuestInput, Guest } from "@support-hub/shared";
 import { BIRTH_DATE_ERROR, formatBirthDate, parseBirthDate } from "../lib/date";
 import BirthDateInput from "./BirthDateInput";
-import { input, label } from "../lib/ui";
+import { btn, input, label, size } from "../lib/ui";
 
 const GENDERS: Array<{ value: CreateGuestInput["gender"]; label: string }> = [
   { value: "woman", label: "Woman" },
@@ -9,6 +9,10 @@ const GENDERS: Array<{ value: CreateGuestInput["gender"]; label: string }> = [
   { value: "non_binary", label: "Non-binary" },
   { value: "prefer_not_to_say", label: "Prefer not to say" },
 ];
+
+// Filled in by "No postcode" for guests who don't have one (e.g. no fixed
+// address), since postcode is required.
+const DEFAULT_POSTCODE = "3012";
 
 // What the volunteer has typed, before validation: birth date is still
 // DD/MM/YYYY text and empty fields are empty strings.
@@ -58,11 +62,12 @@ type GuestFormData = {
   notes: string | null;
 };
 
-// Checks what the shared Zod schemas can't (a gender was picked, the birth
-// date is a real DD/MM/YYYY date) and returns the fields with empty ones as
+// Checks what the shared Zod schemas can't (a gender was picked, a postcode
+// was entered, the birth date is a real DD/MM/YYYY date) and returns the fields with empty ones as
 // null; each screen then validates against its own schema.
 export function readGuestForm(values: GuestFormValues): { data: GuestFormData } | { error: string } {
   if (!values.gender) return { error: "Please select a gender." };
+  if (!values.postcode.trim()) return { error: `Please enter a postcode, or tap "No postcode" to use ${DEFAULT_POSTCODE}.` };
 
   const birthDate = values.birthDateInput ? parseBirthDate(values.birthDateInput) : null;
   if (birthDate === undefined) return { error: BIRTH_DATE_ERROR };
@@ -93,7 +98,7 @@ export default function GuestFormFields({
     <>
       <div>
         <label htmlFor="displayName" className={label}>
-          Name
+          Name <span className="text-red-600">*</span>
         </label>
         <input
           id="displayName"
@@ -106,7 +111,9 @@ export default function GuestFormFields({
       </div>
 
       <fieldset>
-        <legend className={label}>Gender (required)</legend>
+        <legend className={label}>
+          Gender <span className="text-red-600">*</span>
+        </legend>
         <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {GENDERS.map((g) => (
             <label key={g.value} className="cursor-pointer">
@@ -140,15 +147,25 @@ export default function GuestFormFields({
 
         <div>
           <label htmlFor="postcode" className={label}>
-            Postcode
+            Postcode <span className="text-red-600">*</span>
           </label>
-          <input
-            id="postcode"
-            value={values.postcode}
-            onChange={(e) => onChange({ postcode: e.target.value })}
-            placeholder="e.g. 3021"
-            className={input}
-          />
+          <div className="flex items-start gap-2">
+            <input
+              id="postcode"
+              value={values.postcode}
+              onChange={(e) => onChange({ postcode: e.target.value })}
+              placeholder="e.g. 3021"
+              required
+              className={input}
+            />
+            <button
+              type="button"
+              onClick={() => onChange({ postcode: DEFAULT_POSTCODE })}
+              className={`${btn.secondary} ${size.lg} mt-1 shrink-0 whitespace-nowrap`}
+            >
+              No postcode
+            </button>
+          </div>
         </div>
 
         <div>
