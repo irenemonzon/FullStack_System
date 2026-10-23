@@ -39,12 +39,16 @@ pnpm --filter api build
 pnpm --filter web build
 ```
 
-Tests (apps/api only — no tests elsewhere yet):
+Tests:
 ```
-pnpm --filter api test                              # all tests
-pnpm --filter api exec vitest run src/__tests__/rls.test.ts   # single file
+pnpm --filter api test                              # API: all tests (Vitest)
+pnpm --filter api exec vitest run src/__tests__/rls.test.ts   # API: single file
+pnpm --filter web test                              # web: all tests (Jest + React Testing Library)
+pnpm --filter web exec jest src/__tests__/RegisterGuest.test.tsx   # web: single file
 ```
-Tests hit the **real** Supabase project over the network (there's no local Postgres or mocking) — `.env` must be populated and the `TEST_VOLUNTEER_*`/`TEST_ADMIN_*` accounts must exist for `rls.test.ts` and `auth.test.ts` to pass.
+API tests hit the **real** Supabase project over the network (there's no local Postgres or mocking) — `.env` must be populated and the `TEST_VOLUNTEER_*`/`TEST_ADMIN_*` accounts must exist for `rls.test.ts` and `auth.test.ts` to pass.
+
+Web tests run offline in jsdom (`apps/web/jest.config.cjs`, Babel 7 transform, config inline so it can't affect Vite). `src/__tests__/setup.ts` mocks `lib/supabaseClient` with a signed-in session and replaces `fetch`; tests queue API responses with `mockApi()` and render screens with `renderScreen()` from `src/__tests__/utils.tsx`, so screens go through their real React Query hooks and `apiClient`. Tests are type-checked by `tsconfig.test.json` as part of `pnpm --filter web build`.
 
 Database (run from `db/`, or `pnpm --filter db <script>`):
 ```

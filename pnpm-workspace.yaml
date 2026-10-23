@@ -3,5 +3,7 @@ packages:
   - "packages/*"
   - "db"
 allowBuilds:
+  '@parcel/watcher': false
   '@scarf/scarf': false
   esbuild: true
+  unrs-resolver: false
